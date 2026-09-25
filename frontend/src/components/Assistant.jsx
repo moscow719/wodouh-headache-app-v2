@@ -8,7 +8,7 @@ function Assistant() {
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
 
-  function handleSend() {
+  async function handleSend() {
     if (input.trim().length === 0) return;
 
     const userMessage = { role: 'user', text: input };
@@ -17,36 +17,38 @@ function Assistant() {
     setInput('');
     setSending(true);
 
-    const context = getLatestAssessment();
+    const context = await getLatestAssessment();
 
-    fetch('http://localhost:3000/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: userMessage.text,
-        context,
-        history: messages,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setSending(false);
-        if (data.success) {
-          setMessages((prev) => [...prev, { role: 'model', text: data.reply }]);
-        } else {
-          setMessages((prev) => [
-            ...prev,
-            { role: 'model', text: 'حصل خطأ، حاول تاني بعد شوية.' },
-          ]);
-        }
-      })
-      .catch(() => {
-        setSending(false);
+    try {
+      const res = await fetch('http://localhost:3000/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage.text,
+          context,
+          history: messages,
+        }),
+      });
+      const data = await res.json();
+
+      setSending(false);
+
+      if (data.success) {
+        setMessages((prev) => [...prev, { role: 'model', text: data.reply }]);
+      } else {
         setMessages((prev) => [
           ...prev,
-          { role: 'model', text: 'تعذر الاتصال بالسيرفر.' },
+          { role: 'model', text: 'حصل خطأ، حاول تاني بعد شوية.' },
         ]);
-      });
+      }
+    } catch (err) {
+      console.error(err);
+      setSending(false);
+      setMessages((prev) => [
+        ...prev,
+        { role: 'model', text: 'تعذر الاتصال بالسيرفر.' },
+      ]);
+    }
   }
 
   function handleKeyDown(e) {

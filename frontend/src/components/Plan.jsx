@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getAssessmentStats } from '../utils/storage';
 import { getPlanForType } from '../data/preventionPlans';
+import MedicationTracker from './MedicationTracker';
+import MedicationSchedule from './MedicationSchedule';
 
 const typeLabels = {
   tension: 'صداع توتري',
@@ -13,11 +15,20 @@ const typeLabels = {
 
 function Plan({ onNavigate }) {
   const [mostCommonType, setMostCommonType] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stats = getAssessmentStats();
-    setMostCommonType(stats.mostCommonType);
+    async function loadData() {
+      const stats = await getAssessmentStats();
+      setMostCommonType(stats.mostCommonType);
+      setLoading(false);
+    }
+    loadData();
   }, []);
+
+  if (loading) {
+    return <p className="muted-text">جارٍ التحميل...</p>;
+  }
 
   if (!mostCommonType) {
     return (
@@ -73,6 +84,12 @@ function Plan({ onNavigate }) {
 
       <div className="emergency-note" style={{ marginTop: 18 }}>
         ⚠️ لو الصداع استمر لأكثر من 3 أيام أو زادت شدته، لازم تراجع طبيب.
+      </div>
+      
+      <MedicationTracker />
+      
+      <div style={{ marginTop: 18 }}>
+        <MedicationSchedule />
       </div>
     </div>
   );

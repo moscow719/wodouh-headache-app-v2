@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getAssessmentStats, getLatestAssessment } from '../utils/storage';
+import FamilyHistory from './FamilyHistory';
 
 const typeLabels = {
   tension: 'صداع توتري',
@@ -13,11 +14,24 @@ const typeLabels = {
 function Home({ onNavigate }) {
   const [stats, setStats] = useState({ totalAssessments: 0, mostCommonType: null });
   const [latest, setLatest] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setStats(getAssessmentStats());
-    setLatest(getLatestAssessment());
+    async function loadData() {
+      const [statsData, latestData] = await Promise.all([
+        getAssessmentStats(),
+        getLatestAssessment(),
+      ]);
+      setStats(statsData);
+      setLatest(latestData);
+      setLoading(false);
+    }
+    loadData();
   }, []);
+
+  if (loading) {
+    return <p className="muted-text">جارٍ التحميل...</p>;
+  }
 
   const formattedDate = latest
     ? new Date(latest.date).toLocaleDateString('ar-EG', {
@@ -70,6 +84,10 @@ function Home({ onNavigate }) {
             </div>
           </>
         )}
+</div>
+
+      <div style={{ marginTop: 18 }}>
+        <FamilyHistory />
       </div>
     </div>
   );

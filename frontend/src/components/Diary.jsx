@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getAssessments } from '../utils/storage';
+import CalendarView from './CalendarView';
 
 const typeLabels = {
   tension: 'صداع توتري',
@@ -12,9 +13,15 @@ const typeLabels = {
 
 function Diary({ onNavigate }) {
   const [assessments, setAssessments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setAssessments(getAssessments());
+    async function loadData() {
+      const data = await getAssessments();
+      setAssessments(data);
+      setLoading(false);
+    }
+    loadData();
   }, []);
 
   function formatDate(isoDate) {
@@ -25,6 +32,10 @@ function Diary({ onNavigate }) {
       hour: '2-digit',
       minute: '2-digit',
     });
+  }
+
+  if (loading) {
+    return <p className="muted-text">جارٍ التحميل...</p>;
   }
 
   return (
@@ -45,6 +56,7 @@ function Diary({ onNavigate }) {
           <p className="muted-text">لما تعمل تقييم، هيظهر هنا في السجل.</p>
         </div>
       )}
+            {assessments.length > 0 && <CalendarView />}
 
       {assessments.length > 0 && (
         <div className="card" style={{ overflowX: 'auto' }}>

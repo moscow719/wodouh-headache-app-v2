@@ -1,5 +1,16 @@
 import { useState, useEffect } from 'react';
 import { saveAssessment } from '../utils/storage';
+import HeadMap from './HeadMap';
+import PainScale from './PainScale';
+
+const regionLabels = {
+  forehead: 'الجبهة',
+  left_side: 'الجانب الأيسر',
+  right_side: 'الجانب الأيمن',
+  back: 'خلف الرأس',
+  around_eyes: 'حول العين',
+  top: 'أعلى الرأس',
+};
 
 function Assessment({ onAnalysisComplete }) {
   const [redFlagQuestions, setRedFlagQuestions] = useState([]);
@@ -12,6 +23,8 @@ function Assessment({ onAnalysisComplete }) {
   const [assessmentComplete, setAssessmentComplete] = useState(false);
 
   const [description, setDescription] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [painLevel, setPainLevel] = useState(5);
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState(null);
 
@@ -45,34 +58,62 @@ function Assessment({ onAnalysisComplete }) {
     }
   }
 
-  function handleAnalyze() {
+  function buildAutoPrefix(regionLabel, level) {
+    const regionPart = regionLabel ? `الألم في منطقة ${regionLabel}. ` : '';
+    const painPart = `شدة الألم ${level} من 10. `;
+    return regionPart + painPart;
+  }
+
+  function updateDescriptionPrefix(regionLabel, level) {
+    setDescription((prev) => {
+      const withoutOldPrefix = prev.replace(
+        /^(الألم في منطقة .+?\.\s*)?شدة الألم \d+ من 10\.\s*/,
+        ''
+      );
+      return buildAutoPrefix(regionLabel, level) + withoutOldPrefix;
+    });
+  }
+
+  function handleRegionSelect(regionId, regionLabel) {
+    setSelectedRegion(regionId);
+    updateDescriptionPrefix(regionLabel, painLevel);
+  }
+
+  function handlePainChange(level) {
+    setPainLevel(level);
+    const currentRegionLabel = selectedRegion ? regionLabels[selectedRegion] : null;
+    updateDescriptionPrefix(currentRegionLabel, level);
+  }
+
+  async function handleAnalyze() {
     if (description.trim().length === 0) return;
 
     setAnalyzing(true);
     setAnalysisError(null);
 
-    fetch('http://localhost:3000/api/analyze-symptoms', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ description }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setAnalyzing(false);
-        if (data.success && data.isHeadacheRelated) {
-          saveAssessment(data);
-          onAnalysisComplete(data);
-        } else if (data.success && !data.isHeadacheRelated) {
-          setAnalysisError('الوصف اللي كتبته مايبدوش متعلق بالصداع. من فضلك اوصف أعراض الصداع اللي حاسس بيه.');
-        } else {
-          setAnalysisError('حصل خطأ أثناء تحليل الأعراض.');
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        setAnalysisError('تعذر الاتصال بالسيرفر.');
-        setAnalyzing(false);
+    try {
+      const res = await fetch('http://localhost:3000/api/analyze-symptoms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description }),
       });
+      const data = await res.json();
+
+      setAnalyzing(false);
+
+      if (data.success && data.isHeadacheRelated) {
+        await saveAssessment(data);
+        onAnalysisComplete(data);
+      } else if (data.success && !data.isHeadacheRelated) {
+        setAnalysisError('الوصف اللي كتبته مايبدوش متعلق بالصداع. من فضلك اوصف أعراض الصداع اللي حاسس بيه.');
+      } else {
+        setAnalysisError('حصل خطأ أثناء تحليل الأعراض.');
+      }
+    } catch (err) {
+      console.error(err);
+      setAnalyzing(false);
+      setAnalysisError('تعذر الاتصال بالسيرفر.');
+    }
   }
 
   if (loading) return <p className="muted-text">جارٍ التحميل...</p>;
@@ -81,9 +122,19 @@ function Assessment({ onAnalysisComplete }) {
   if (emergencyTriggered) {
     return (
       <div className="emergency-screen">
+        <div className="emergency-icon">🚨</div>
         <h1>يلزم تقييم طبي عاجل</h1>
         <p>
-          بناءً على إجابتك، ده ممكن يشير لحالة خطيرة. من فضلك توجه لأقرب طوارئ فورًا.
+          بناءً على إجابتك، ده ممكن يشير لحالة خطيرة. من فضلك توجه لأقرب طوارئ فورًا أو اتصل
+          بالإسعاف الآن.
+        </p>
+
+        <a href="tel:123" className="emergency-call-button">
+          📞 اتصل بالطوارئ الآن (123)
+        </a>
+
+        <p className="emergency-subtext">
+          لو مش قادر تتحرك أو حد معاك، خلي أي حد قريب منك يساعدك تتصل فورًا.
         </p>
       </div>
     );
@@ -98,9 +149,13 @@ function Assessment({ onAnalysisComplete }) {
             خبر جيد — مفيش أي علامة من علامات الخطورة الطارئة. تقدر دلوقتي تصف الصداع بكلامك.
           </p>
 
+          <HeadMap onSelect={handleRegionSelect} selectedRegion={selectedRegion} />
+
+          <PainScale value={painLevel} onChange={handlePainChange} />
+
           <textarea
             className="description-input"
-            placeholder="مثال: صداعي في الجانب الأيمن، نابض، ومعايا غثيان"
+            placeholder="مثال: صداعي نابض ومعايا غثيان (اختر مكان الألم وشدته فوق كمان)"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
