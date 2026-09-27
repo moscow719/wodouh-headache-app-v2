@@ -22,7 +22,20 @@ function ComingSoon({ title }) {
   );
 }
 
+import { supabaseConfigError } from './supabaseClient';
+
 function App() {
+  if (supabaseConfigError) {
+    return (
+      <div style={{ padding: 40, fontFamily: 'monospace', direction: 'ltr', textAlign: 'left' }}>
+        <h2>Debug: Environment variables missing</h2>
+        <p>VITE_SUPABASE_URL: {JSON.stringify(import.meta.env.VITE_SUPABASE_URL)}</p>
+        <p>VITE_SUPABASE_KEY exists: {String(Boolean(import.meta.env.VITE_SUPABASE_KEY))}</p>
+        <p>VITE_API_URL: {JSON.stringify(import.meta.env.VITE_API_URL)}</p>
+      </div>
+    );
+  }
+
   const [session, setSession] = useState(null);
   const [sessionLoading, setSessionLoading] = useState(true);
   const [fontScale, setFontScale] = useState(() => Number(localStorage.getItem('wodouh_font_scale')) || 1);
