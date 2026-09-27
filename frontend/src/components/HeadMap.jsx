@@ -12,11 +12,27 @@ const points = [
 function HeadMap({ onSelect, selectedRegion }) {
   const [hovered, setHovered] = useState(null);
 
+  function handlePointKeyDown(event, point) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onSelect(point.id, point.label);
+    }
+  }
+
+  const selectedLabel = selectedRegion
+    ? points.find((point) => point.id === selectedRegion)?.label
+    : null;
+
   return (
     <div className="headmap-wrapper">
       <p className="headmap-title">حدد المكان اللي بيوجعك</p>
 
-      <svg viewBox="0 0 200 220" className="headmap-svg">
+      <svg
+        viewBox="0 0 200 220"
+        className="headmap-svg"
+        role="img"
+        aria-label="خريطة تفاعلية لمناطق الرأس"
+      >
         {/* Simple illustrated head shape */}
         <path
           d="M100,15
@@ -27,31 +43,64 @@ function HeadMap({ onSelect, selectedRegion }) {
              C35,50 60,15 100,15 Z"
           className="head-illustration"
         />
+
         {/* Ears */}
-        <ellipse cx="35" cy="100" rx="7" ry="14" className="head-illustration" />
-        <ellipse cx="165" cy="100" rx="7" ry="14" className="head-illustration" />
+        <ellipse
+          cx="35"
+          cy="100"
+          rx="7"
+          ry="14"
+          className="head-illustration"
+        />
+
+        <ellipse
+          cx="165"
+          cy="100"
+          rx="7"
+          ry="14"
+          className="head-illustration"
+        />
 
         {/* Face hints */}
         <circle cx="82" cy="105" r="3" className="face-detail" />
         <circle cx="118" cy="105" r="3" className="face-detail" />
-        <path d="M90,135 Q100,142 110,135" className="face-detail-line" />
 
-        {points.map((p) => (
-          <circle
-            key={p.id}
-            cx={p.cx}
-            cy={p.cy}
-            r={selectedRegion === p.id ? 10 : 8}
-            className={`head-point ${selectedRegion === p.id ? 'selected' : ''}`}
-            onClick={() => onSelect(p.id, p.label)}
-            onMouseEnter={() => setHovered(p.label)}
-            onMouseLeave={() => setHovered(null)}
-          />
-        ))}
+        <path
+          d="M90,135 Q100,142 110,135"
+          className="face-detail-line"
+        />
+
+        {points.map((point) => {
+          const isSelected = selectedRegion === point.id;
+
+          return (
+            <circle
+              key={point.id}
+              cx={point.cx}
+              cy={point.cy}
+              r={isSelected ? 10 : 8}
+              className={`head-point ${
+                isSelected ? 'selected' : ''
+              }`}
+              onClick={() => onSelect(point.id, point.label)}
+              onKeyDown={(event) =>
+                handlePointKeyDown(event, point)
+              }
+              onMouseEnter={() => setHovered(point.label)}
+              onMouseLeave={() => setHovered(null)}
+              tabIndex={0}
+              role="button"
+              aria-label={`اختيار منطقة ${point.label}`}
+              aria-pressed={isSelected}
+            />
+          );
+        })}
       </svg>
 
-      <p className="headmap-hint">
-        {hovered || (selectedRegion ? points.find((p) => p.id === selectedRegion)?.label : 'دوس على النقطة اللي بتوجعك')}
+      <p className="headmap-hint" aria-live="polite">
+        {hovered ||
+          selectedLabel ||
+          'دوس على النقطة اللي بتوجعك'}
       </p>
     </div>
   );

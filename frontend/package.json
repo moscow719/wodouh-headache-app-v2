@@ -1,7 +1,8 @@
 {
-  "name": "frontend",
+  "name": "neuropath-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Frontend for the NeuroPath headache assessment application",
   "type": "module",
   "scripts": {
     "dev": "vite",
