@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_URL } from '../config';
 
 function Results({ analysisData, onNavigate }) {
   const [loadingPlaces, setLoadingPlaces] = useState(false);
@@ -20,7 +21,7 @@ function Results({ analysisData, onNavigate }) {
       (position) => {
         const { latitude, longitude } = position.coords;
 
-        fetch(`http://localhost:3000/api/nearby-doctors?lat=${latitude}&lng=${longitude}`)
+        fetch(`${API_URL}/api/nearby-doctors?lat=${latitude}&lng=${longitude}`)
           .then((res) => res.json())
           .then((data) => {
             setLoadingPlaces(false);

@@ -1,12 +1,12 @@
 require('dotenv').config();
+const serverless = require('serverless-http');
 const express = require('express');
 const cors = require('cors');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const redFlagQuestions = require('./data/redFlags');
-const { getSpecialtyForType } = require('./data/specialties');
+const redFlagQuestions = require('../data/redFlags');
+const { getSpecialtyForType } = require('../data/specialties');
 
 const app = express();
-const PORT = 3000;
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -33,10 +33,6 @@ app.get('/api/test-ai', async (req, res) => {
   }
 });
 
-// Analyzes the user's free-text description of their headache symptoms.
-// The AI only classifies the headache type from a FIXED list - it never
-// decides the medical specialty itself. The specialty mapping is explicit
-// code logic (see data/specialties.js), not an AI decision.
 app.post('/api/analyze-symptoms', async (req, res) => {
   const { description } = req.body;
 
@@ -88,10 +84,7 @@ The "primaryType" MUST be exactly one of the six listed values, chosen as the cl
       const parsed = JSON.parse(rawText);
 
       if (!parsed.isHeadacheRelated) {
-        return res.json({
-          success: true,
-          isHeadacheRelated: false,
-        });
+        return res.json({ success: true, isHeadacheRelated: false });
       }
 
       const specialty = getSpecialtyForType(parsed.primaryType);
@@ -106,23 +99,18 @@ The "primaryType" MUST be exactly one of the six listed values, chosen as the cl
       });
     } catch (error) {
       console.error(`Attempt ${attempt} failed:`, error.message);
-
-      const isOverloaded = error.status === 503;
       const isLastAttempt = attempt === maxRetries;
-
-      if (!isOverloaded || isLastAttempt) {
+      if (isLastAttempt) {
         return res.status(500).json({
           success: false,
           error: 'The AI service is currently unavailable. Please try again in a moment.',
         });
       }
-
       await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
     }
   }
 });
-// Finds nearby doctors, clinics, and hospitals using OpenStreetMap's
-// free Overpass API - no API key or credit card required.
+
 app.get('/api/nearby-doctors', async (req, res) => {
   const { lat, lng } = req.query;
 
@@ -146,7 +134,7 @@ app.get('/api/nearby-doctors', async (req, res) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'WodouhHeadacheApp/1.0',
+        'User-Agent': 'NeuroPathApp/1.0',
         Accept: '*/*',
       },
       body: 'data=' + encodeURIComponent(overpassQuery),
@@ -177,9 +165,7 @@ app.get('/api/nearby-doctors', async (req, res) => {
     res.status(500).json({ success: false, error: 'Failed to fetch nearby places' });
   }
 });
-// A conversational assistant that can reference the user's latest
-// assessment as context, but follows the same strict safety rules:
-// no diagnosis, no medication advice, no treatment plans.
+
 app.post('/api/chat', async (req, res) => {
   const { message, context, history } = req.body;
 
@@ -216,8 +202,6 @@ Reply in plain text only, not JSON.
     systemInstruction: systemInstructions,
   });
 
-  // Gemini requires the conversation history to start with a user message,
-  // so we drop any leading assistant messages (like the initial greeting).
   const rawHistory = history || [];
   const firstUserIndex = rawHistory.findIndex((msg) => msg.role === 'user');
   const validHistory = firstUserIndex === -1 ? [] : rawHistory.slice(firstUserIndex);
@@ -237,21 +221,17 @@ Reply in plain text only, not JSON.
       return res.json({ success: true, reply: text });
     } catch (error) {
       console.error(`Chat attempt ${attempt} failed:`, error.message);
-
       const isLastAttempt = attempt === maxRetries;
-
       if (isLastAttempt) {
         return res.status(500).json({
           success: false,
           error: 'The AI service is currently unavailable. Please try again in a moment.',
         });
       }
-
       await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
     }
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+module.exports = app;
+module.exports.handler = serverless(app);

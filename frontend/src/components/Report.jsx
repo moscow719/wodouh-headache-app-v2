@@ -80,13 +80,13 @@ function Report({ onNavigate }) {
   }
 
   function buildSummaryText() {
-    return `تقرير وضوح للصداع:
+    return `تقرير NeuroPath للصداع:
 عدد التقييمات: ${totalCount}
 متوسط نسبة التوافق: ${avgConfidence}%
 الفترة: ${formatDate(firstDate)} - ${formatDate(lastDate)}
 أكثر الأنماط: ${sortedTypes.map(([type]) => typeLabels[type] || type).join(', ')}
 
-(تم إنشاء هذا التقرير عبر تطبيق وضوح، وهو لأغراض التوعية فقط وليس تشخيصًا طبيًا)`;
+(تم إنشاء هذا التقرير عبر تطبيق NeuroPath، وهو لأغراض التوعية فقط وليس تشخيصًا طبيًا)`;
   }
 
   function handleWhatsAppShare() {
@@ -121,7 +121,7 @@ function Report({ onNavigate }) {
       </div>
 
       <div className="printable-report">
-        <h1 className="print-only-title">تقرير الطبيب — وضوح</h1>
+        <h1 className="print-only-title">تقرير الطبيب — NeuroPath</h1>
 
         <div className="stats-grid stats-grid-3">
           <div className="card stat-card">
@@ -190,7 +190,7 @@ function Report({ onNavigate }) {
         </div>
 
         <p className="print-only-disclaimer">
-          هذا التقرير من أداة "وضوح" لأغراض التوعية فقط، وليس تشخيصًا طبيًا نهائيًا.
+          هذا التقرير من أداة "NeuroPath" لأغراض التوعية فقط، وليس تشخيصًا طبيًا نهائيًا.
         </p>
       </div>
     </div>

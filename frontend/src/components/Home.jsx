@@ -45,7 +45,7 @@ function Home({ onNavigate }) {
     <div>
       <div className="page-head">
         <div>
-          <h1>أهلًا بيك في وضوح</h1>
+          <h1>أهلًا بيك في NeuroPath</h1>
           <p className="muted-text">نظرة سريعة على حالتك بناءً على تقييماتك السابقة.</p>
         </div>
         <button className="btn primary" onClick={() => onNavigate('assess')}>

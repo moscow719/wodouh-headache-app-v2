@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getLatestAssessment } from '../utils/storage';
+import { API_URL } from '../config';
 
 function Assistant() {
   const [messages, setMessages] = useState([
@@ -20,7 +21,7 @@ function Assistant() {
     const context = await getLatestAssessment();
 
     try {
-      const res = await fetch('http://localhost:3000/api/chat', {
+      const res = await fetch(`${API_URL}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

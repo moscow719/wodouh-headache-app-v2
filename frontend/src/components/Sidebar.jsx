@@ -19,7 +19,7 @@ function Sidebar({ activeView, onNavigate, fontScale, setFontScale, highContrast
   return (
     <aside className="sidebar">
       <div className="brand">
-        <span className="brand-mark">🌤️</span> وضوح
+        <span className="brand-mark">🌤️</span> NeuroPath
       </div>
 
       <nav className="nav" aria-label="التنقل الرئيسي">
@@ -56,7 +56,7 @@ function Sidebar({ activeView, onNavigate, fontScale, setFontScale, highContrast
       </button>
 
       <div className="sidebar-footer">
-        وضوح — أداة توعية، وليست بديلًا عن تشخيص الطبيب.
+        NeuroPath — أداة توعية، وليست بديلًا عن تشخيص الطبيب.
       </div>
     </aside>
   );

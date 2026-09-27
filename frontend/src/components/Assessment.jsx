@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { saveAssessment } from '../utils/storage';
+import { API_URL } from '../config';
 import HeadMap from './HeadMap';
 import PainScale from './PainScale';
 
@@ -29,7 +30,7 @@ function Assessment({ onAnalysisComplete }) {
   const [analysisError, setAnalysisError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/red-flags')
+    fetch(`${API_URL}/api/red-flags`)
       .then((response) => response.json())
       .then((data) => {
         setRedFlagQuestions(data);
@@ -92,7 +93,7 @@ function Assessment({ onAnalysisComplete }) {
     setAnalysisError(null);
 
     try {
-      const res = await fetch('http://localhost:3000/api/analyze-symptoms', {
+      const res = await fetch(`${API_URL}/api/analyze-symptoms`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ description }),
