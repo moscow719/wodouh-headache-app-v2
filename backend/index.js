@@ -32,6 +32,7 @@ const ALLOWED_HEADACHE_TYPES = new Set([
 const VALID_RED_FLAG_ANSWER_VALUES = new Set([
   'yes',
   'no',
+  'unknown',
 ]);
 
 const RED_FLAG_IDS = new Set(
@@ -301,6 +302,9 @@ function validateRedFlagAnswers(redFlagAnswers) {
   return {
     valid: true,
     emergency: false,
+    uncertainQuestionIds: redFlagAnswers
+      .filter((answer) => answer.answer === 'unknown')
+      .map((answer) => answer.id),
   };
 }
 
@@ -477,6 +481,23 @@ app.post(
       });
     }
 
+    const uncertainQuestions = redFlagQuestions
+      .filter((question) =>
+        redFlagValidation.uncertainQuestionIds.includes(question.id)
+      )
+      .map((question) => question.question);
+
+    const uncertaintyInstruction =
+      uncertainQuestions.length > 0
+        ? `
+SCREENING UNCERTAINTY:
+
+The user was unsure about one or more urgent warning-sign questions: ${uncertainQuestions.join('; ')}.
+Do not treat these warning signs as absent or say that the screening ruled them out.
+Avoid reassurance based on the screening and advise the user to seek medical evaluation if the uncertain symptom may be present or symptoms are severe or worsening.
+`
+        : '';
+
     const systemInstructions = `
 You are a headache-awareness assistant inside a medical triage tool.
 
@@ -512,6 +533,7 @@ If it IS headache-related:
 - Always end the analysis by reminding the user that only a doctor can confirm a real diagnosis.
 - If the user writes in Arabic, write the analysis in Arabic.
 - If the user writes in English, write the analysis in English.
+${uncertaintyInstruction}
 
 You must respond ONLY with valid JSON in exactly this shape:
 

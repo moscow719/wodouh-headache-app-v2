@@ -406,6 +406,7 @@ function AppContent() {
         return (
           <Assessment
             onAnalysisComplete={handleAnalysisComplete}
+            onExit={() => handleNavigate('home')}
           />
         );
 
@@ -464,17 +465,33 @@ function AppContent() {
   }
 
   return (
-    <div className="app-shell">
-      <Sidebar
-        activeView={activeView}
-        onNavigate={handleNavigate}
-        fontScale={fontScale}
-        setFontScale={setFontScale}
-        highContrast={highContrast}
-        setHighContrast={setHighContrast}
-      />
+    <div
+      className={
+        activeView === 'assess'
+          ? 'app-shell assessment-shell'
+          : 'app-shell'
+      }
+    >
+      {activeView !== 'assess' && (
+        <Sidebar
+          activeView={activeView}
+          onNavigate={handleNavigate}
+          fontScale={fontScale}
+          setFontScale={setFontScale}
+          highContrast={highContrast}
+          setHighContrast={setHighContrast}
+        />
+      )}
 
-      <main className="content">{renderView()}</main>
+      <main
+        className={
+          activeView === 'assess'
+            ? 'content content-assessment'
+            : 'content'
+        }
+      >
+        {renderView()}
+      </main>
     </div>
   );
 }
