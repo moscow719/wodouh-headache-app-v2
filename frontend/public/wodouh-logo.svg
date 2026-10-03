@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 120">
+  <path d="M22 24a42 42 0 0 1 72 30l10 12-10 4v16a11 11 0 0 1-11 11H56v13H22V82a42 42 0 0 1 0-58Z" fill="#fff"/>
+  <circle cx="60" cy="58" r="21" fill="#16aaa3"/>
+  <circle cx="60" cy="58" r="9" fill="#fff"/>
+  <circle cx="84" cy="40" r="9" fill="#75d6f3"/>
+  <text x="128" y="58" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700">Wodouh</text>
+  <text x="128" y="101" fill="#75d6f3" font-family="Arial, Tahoma, sans-serif" font-size="36" font-weight="700">وضوح</text>
+</svg>

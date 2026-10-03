@@ -133,13 +133,11 @@ function Sidebar({
       aria-label="القائمة الجانبية"
     >
       <div className="brand">
-        <span
-          className="brand-mark"
-          aria-hidden="true"
-        >
-          🌤️
-        </span>{' '}
-        NeuroPath
+        <img
+          className="brand-logo"
+          src="/wodouh-logo.svg"
+          alt="وضوح Wodouh"
+        />
       </div>
 
       <nav

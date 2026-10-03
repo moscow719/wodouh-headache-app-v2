@@ -372,12 +372,12 @@ function Auth() {
         aria-labelledby="auth-title"
         aria-busy={loading}
       >
-        <div
+        <img
           className="disclaimer-icon"
+          src="/wodouh-mark.svg"
+          alt=""
           aria-hidden="true"
-        >
-          🌤️
-        </div>
+        />
 
         <h1 id="auth-title">
           {title}

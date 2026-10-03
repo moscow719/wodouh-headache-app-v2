@@ -173,12 +173,12 @@ function ResetPassword() {
           aria-live="polite"
           aria-busy="true"
         >
-          <div
+          <img
             className="disclaimer-icon"
+            src="/wodouh-mark.svg"
+            alt=""
             aria-hidden="true"
-          >
-            🌤️
-          </div>
+          />
 
           <h1>جارٍ التحقق...</h1>
 

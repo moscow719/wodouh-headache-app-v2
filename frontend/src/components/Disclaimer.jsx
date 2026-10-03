@@ -22,12 +22,12 @@ function Disclaimer({ onAgree }) {
         aria-labelledby="disclaimer-title"
         aria-describedby="disclaimer-description"
       >
-        <div
+        <img
           className="disclaimer-icon"
+          src="/wodouh-mark.svg"
+          alt=""
           aria-hidden="true"
-        >
-          🌤️
-        </div>
+        />
 
         <h1 id="disclaimer-title">
           قبل ما نبدأ
