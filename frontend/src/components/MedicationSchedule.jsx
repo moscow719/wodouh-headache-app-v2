@@ -441,7 +441,7 @@ function MedicationSchedule() {
       MAX_SCHEDULE_ITEMS
     ) {
       setError(
-        `مينفعش تضيف أكتر من ${MAX_SCHEDULE_ITEMS} موعد في الجدول.`
+        `لا يمكن إضافة أكثر من ${MAX_SCHEDULE_ITEMS} موعدًا إلى الجدول.`
       );
       return;
     }
@@ -576,12 +576,24 @@ function MedicationSchedule() {
   }
 
   return (
-    <div className="card">
+    <div className="card schedule-card">
       <h3 style={{ marginTop: 0 }}>
         <span
+          className="section-title-icon"
           aria-hidden="true"
         >
-          ⏰
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            focusable="false"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 2" />
+          </svg>
         </span>{' '}
         جدول الأدوية اليومي
       </h3>
@@ -591,17 +603,6 @@ function MedicationSchedule() {
         للأدوية حسب المواعيد التي حددها
         لك طبيبك أو الصيدلي.
       </p>
-
-      <div
-        className="medication-note"
-        style={{ marginBottom: 16 }}
-        role="note"
-      >
-        مهم: NeuroPath لا يحدد الجرعة
-        أو مواعيد تناول الدواء. أضف فقط
-        المواعيد التي وصفها لك الطبيب أو
-        أوصى بها الصيدلي.
-      </div>
 
       {error && (
         <p
@@ -682,20 +683,40 @@ function MedicationSchedule() {
 
         <button
           type="button"
-          className="btn primary"
+          className="btn secondary schedule-submit"
           onClick={
             handleAddSchedule
           }
           disabled={
-            loading ||
-            !userId ||
-            !newName.trim()
+            loading
           }
           aria-busy={loading}
         >
-          + إضافة
+          إضافة إلى الجدول
         </button>
       </div>
+
+      {!loading && userId && (
+        <p className="schedule-storage-note" role="note">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <rect x="3" y="4" width="18" height="14" rx="2" />
+            <path d="M8 22h8m-4-4v4m-6-9 3-3 3 3 2-2 3 3" />
+          </svg>
+          <span>
+            الجدول محفوظ على هذا الجهاز فقط. قد تفقده
+            عند تغيير الجهاز أو مسح بيانات المتصفح.
+          </span>
+        </p>
+      )}
 
       {loading && (
         <p
@@ -714,7 +735,7 @@ function MedicationSchedule() {
             className="muted-text"
             style={{ marginTop: 16 }}
           >
-            مفيش مواعيد مضافة لسه.
+            لا توجد مواعيد مضافة بعد.
           </p>
         )}
 
@@ -765,7 +786,17 @@ function MedicationSchedule() {
                         className="bell-icon"
                         aria-hidden="true"
                       >
-                        🔔
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          focusable="false"
+                        >
+                          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8 12a2 2 0 0 0 4 0" />
+                        </svg>
                       </span>
 
                       <span>
@@ -818,23 +849,11 @@ function MedicationSchedule() {
             className="muted-text"
             style={{ marginTop: 16 }}
           >
-            حالة التناول المسجلة تخص
-            النهارده فقط، وبتتصفّر تلقائيًا
-            عند بداية يوم جديد. تسجيل الحالة
-            هنا مجرد توثيق يدوي من المستخدم.
+            تخص حالة التناول المسجلة هذا اليوم فقط،
+            وتُعاد تلقائيًا عند بدء يوم جديد. تُسجّل الحالة
+            يدويًا للتوثيق.
           </p>
         )}
-
-      {!loading && userId && (
-        <p
-          className="muted-text"
-          style={{ marginTop: 8 }}
-        >
-          الجدول محفوظ على الجهاز الحالي
-          فقط، ومش بيتزامن تلقائيًا بين
-          الأجهزة.
-        </p>
-      )}
     </div>
   );
 }

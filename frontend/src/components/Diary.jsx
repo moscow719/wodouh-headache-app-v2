@@ -27,7 +27,7 @@ function formatDate(dateValue) {
   }
 
   return date.toLocaleDateString(
-    'ar-EG',
+    'ar-EG-u-nu-latn',
     {
       year: 'numeric',
       month: 'long',
@@ -211,7 +211,7 @@ function Diary({ onNavigate }) {
   }
 
   return (
-    <div>
+    <div className="diary-page">
       <div className="page-head">
         <div>
           <h1>
@@ -219,9 +219,8 @@ function Diary({ onNavigate }) {
           </h1>
 
           <p className="muted-text">
-            سجل للتقييمات اللي عملتها، من الأحدث
-            للأقدم. البيانات هنا بتوثق نتائج التقييمات
-            وليست سجلًا مؤكدًا لنوبات الصداع.
+            يعرض هذا السجل نتائج تقييماتك من الأحدث إلى
+            الأقدم، ولا يمثل سجلًا مؤكدًا لنوبات الصداع.
           </p>
         </div>
 
@@ -239,12 +238,11 @@ function Diary({ onNavigate }) {
       {assessments.length === 0 && (
         <div className="card coming-soon">
           <h2>
-            مفيش تقييمات لسه
+            لا توجد تقييمات بعد
           </h2>
 
           <p className="muted-text">
-            لما تعمل تقييم، النتيجة هتظهر هنا
-            في السجل.
+            ستظهر نتائجك هنا بعد إكمال التقييم.
           </p>
 
           <button
@@ -263,16 +261,14 @@ function Diary({ onNavigate }) {
         <>
           <CalendarView />
 
-          <div
-            className="card"
-            style={{
-              overflowX: 'auto',
-              marginTop: 18,
-            }}
-          >
+          <div className="card diary-records-card">
+            <div className="diary-confidence-context" role="note">
+              * نسبة التوافق مؤشر خوارزمي للمقارنة فقط؛
+              وليست احتمالًا للإصابة أو تشخيصًا طبيًا.
+            </div>
             <table className="diary-table">
               <caption className="sr-only">
-                سجل تقييمات الصداع
+                نتائج التقييمات المسجلة
               </caption>
 
               <thead>
@@ -286,7 +282,7 @@ function Diary({ onNavigate }) {
                   </th>
 
                   <th scope="col">
-                    نسبة التوافق
+                    نسبة التوافق*
                   </th>
 
                   <th scope="col">
@@ -336,21 +332,38 @@ function Diary({ onNavigate }) {
                 )}
               </tbody>
             </table>
-          </div>
 
-          <div
-            className="emergency-note"
-            style={{
-              marginTop: 18,
-            }}
-            role="note"
-          >
-            <strong>مهم:</strong>{' '}
-            نسبة التوافق المعروضة هنا هي نتيجة
-            لخوارزمية التقييم، وليست نسبة احتمال
-            الإصابة بمرض أو درجة ثقة في تشخيص طبي.
-            لو الأعراض مستمرة أو مختلفة عن المعتاد،
-            ناقشها مع طبيب.
+            <div className="diary-mobile-list">
+              {assessments.map((item, index) => {
+                const rowKey =
+                  typeof item.id === 'string' && item.id
+                    ? item.id
+                    : `${item.date}-${index}`;
+
+                return (
+                  <article
+                    className="diary-mobile-entry"
+                    key={rowKey}
+                  >
+                    <h2>{getTypeLabel(item.primaryType)}</h2>
+                    <dl>
+                      <div>
+                        <dt>التاريخ والوقت</dt>
+                        <dd>{formatDate(item.date)}</dd>
+                      </div>
+                      <div>
+                        <dt>نسبة التوافق*</dt>
+                        <dd>{formatConfidence(item.confidence)}</dd>
+                      </div>
+                      <div>
+                        <dt>التخصص المناسب للمناقشة</dt>
+                        <dd>{getSpecialtyLabel(item.specialty)}</dd>
+                      </div>
+                    </dl>
+                  </article>
+                );
+              })}
+            </div>
           </div>
         </>
       )}

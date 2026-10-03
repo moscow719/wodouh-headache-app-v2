@@ -120,10 +120,10 @@ function Plan({ onNavigate }) {
   if (!mostCommonType) {
     return (
       <div className="card">
-        <h2>مفيش بيانات كافية لسه</h2>
+        <h2>لا توجد بيانات كافية بعد</h2>
 
         <p className="muted-text">
-          اعمل تقييم واحد على الأقل عشان تظهر لك معلومات
+          أجرِ تقييمًا واحدًا على الأقل لعرض معلومات
           توعوية مرتبطة بالأنماط المسجلة في تقييماتك.
         </p>
 
@@ -182,33 +182,72 @@ function Plan({ onNavigate }) {
     : [];
 
   return (
-    <div>
+    <div className="plan-page">
       <div className="page-head">
         <div>
           <h1>معلومات للوقاية والمتابعة</h1>
 
           <p className="muted-text">
-            المعلومات التالية مبنية على النمط الذي ظهر
-            بشكل متكرر في تقييماتك. هي معلومات توعوية
-            عامة وليست تشخيصًا أو خطة علاج شخصية.
+            المعلومات التالية توعوية عامة، وقد ترتبط
+            بالنمط الأكثر تكرارًا في تقييماتك. لا تمثل
+            تشخيصًا أو خطة علاج شخصية.
           </p>
 
           <p className="muted-text">
-            النمط المسجل بشكل متكرر في تقييماتك:{' '}
+            النمط الأكثر تكرارًا في تقييماتك:{' '}
             <strong>{typeLabel}</strong>
           </p>
         </div>
       </div>
 
       <div
-        className="plan-grid"
+        className="plan-safety-notice"
+        role="note"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M12 3 2.8 20h18.4L12 3Z" />
+          <path d="M12 9v5m0 3h.01" />
+        </svg>
+        <div>
+          <strong>للتوعية العامة فقط</strong>
+          <p>
+            لا تبدأ دواءً جديدًا، ولا توقف دواءً موصوفًا،
+            ولا تغيّر الجرعة اعتمادًا على هذه الصفحة.
+            استشر طبيبًا عند استمرار الصداع أو تكراره
+            أو اختلافه عن المعتاد.
+          </p>
+        </div>
+      </div>
+
+      <div
+        className="plan-sections"
         aria-label="معلومات توعوية"
       >
-        <div className="card plan-col">
-          <h4>
-            <span aria-hidden="true">🍎</span>{' '}
+        <details className="card plan-section" open>
+          <summary className="plan-section-heading">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M12 20V10m0 0c-4.5 0-7-2.2-7-6 4.8 0 7 2.2 7 6Zm0 2c0-3.7 2.5-5.8 7-5.8 0 4.3-2.4 6.2-7 6.2Z" />
+            </svg>
             نصائح غذائية
-          </h4>
+          </summary>
 
           {nutrition.length > 0 ? (
             <ul>
@@ -225,13 +264,24 @@ function Plan({ onNavigate }) {
               لا توجد معلومات متاحة حاليًا.
             </p>
           )}
-        </div>
+        </details>
 
-        <div className="card plan-col">
-          <h4>
-            <span aria-hidden="true">🌙</span>{' '}
+        <details className="card plan-section">
+          <summary className="plan-section-heading">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z" />
+            </svg>
             نمط الحياة
-          </h4>
+          </summary>
 
           {lifestyle.length > 0 ? (
             <ul>
@@ -248,13 +298,24 @@ function Plan({ onNavigate }) {
               لا توجد معلومات متاحة حاليًا.
             </p>
           )}
-        </div>
+        </details>
 
-        <div className="card plan-col">
-          <h4>
-            <span aria-hidden="true">💊</span>{' '}
+        <details className="card plan-section">
+          <summary className="plan-section-heading">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="m10.5 13.5 3-3m-7.7 7.7a4.2 4.2 0 0 1 0-5.9l5.5-5.5a4.2 4.2 0 0 1 5.9 5.9l-5.5 5.5a4.2 4.2 0 0 1-5.9 0Z" />
+            </svg>
             معلومات عامة عن الأدوية
-          </h4>
+          </summary>
 
           {medication.length > 0 ? (
             <ul>
@@ -271,20 +332,7 @@ function Plan({ onNavigate }) {
               لا توجد معلومات متاحة حاليًا.
             </p>
           )}
-        </div>
-      </div>
-
-      <div
-        className="emergency-note"
-        style={{ marginTop: 18 }}
-        role="note"
-      >
-        <strong>مهم:</strong>{' '}
-        المعلومات الموجودة هنا للتوعية العامة فقط.
-        لا تبدأ دواءً جديدًا، ولا توقف دواءً موصوفًا،
-        ولا تغيّر الجرعة اعتمادًا على هذه الصفحة.
-        لو الصداع مستمر أو متكرر أو مختلف عن المعتاد،
-        ناقش الأعراض مع طبيب.
+        </details>
       </div>
 
       <MedicationTracker />

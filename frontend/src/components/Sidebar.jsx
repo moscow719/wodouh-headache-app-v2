@@ -29,7 +29,7 @@ const navItems = Object.freeze([
   },
   {
     id: 'diary',
-    label: 'سجل الصداع',
+    label: 'سجل التقييمات',
     icon: 'diary',
   },
   {
@@ -365,7 +365,19 @@ function Sidebar({
           className="icon"
           aria-hidden="true"
         >
-          🚪
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M10 17l5-5-5-5m5 5H3" />
+            <path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6" />
+          </svg>
         </span>
 
         {loggingOut
@@ -373,10 +385,6 @@ function Sidebar({
           : 'تسجيل الخروج'}
       </button>
 
-      <div className="sidebar-footer">
-        NeuroPath — أداة توعية ومتابعة،
-        وليست بديلًا عن التشخيص الطبي.
-      </div>
     </aside>
   );
 }

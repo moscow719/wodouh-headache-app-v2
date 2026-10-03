@@ -75,6 +75,12 @@ function MedicationTracker() {
   const [loading, setLoading] =
     useState(true);
 
+  const [loadAttempt, setLoadAttempt] =
+    useState(0);
+
+  const [loadError, setLoadError] =
+    useState(null);
+
   const [error, setError] =
     useState(null);
 
@@ -89,6 +95,9 @@ function MedicationTracker() {
 
     async function loadMedications() {
       try {
+        setLoading(true);
+        setLoadError(null);
+
         const data =
           await getMedications();
 
@@ -112,7 +121,6 @@ function MedicationTracker() {
         setMedications(
           validMedications
         );
-        setError(null);
       } catch (err) {
         console.error(
           'Failed to load medications:',
@@ -120,8 +128,8 @@ function MedicationTracker() {
         );
 
         if (isMounted) {
-          setError(
-            'تعذر تحميل سجل الأدوية. من فضلك حاول مرة أخرى.'
+          setLoadError(
+            'تعذر تحميل سجل الأدوية.'
           );
         }
       } finally {
@@ -131,7 +139,7 @@ function MedicationTracker() {
       }
     }
 
-    loadMedications();
+    void loadMedications();
 
     return () => {
       isMounted = false;
@@ -144,7 +152,13 @@ function MedicationTracker() {
         );
       }
     };
-  }, []);
+  }, [loadAttempt]);
+
+  function handleRetryLoad() {
+    setLoadError(null);
+    setLoading(true);
+    setLoadAttempt((attempt) => attempt + 1);
+  }
 
   async function refreshMedications() {
     const data =
@@ -295,19 +309,53 @@ function MedicationTracker() {
     <div className="card medication-tracker">
       <h3 style={{ marginTop: 0 }}>
         <span
+          className="section-title-icon"
           aria-hidden="true"
         >
-          💊
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            focusable="false"
+          >
+            <path d="m10.5 13.5 3-3m-7.7 7.7a4.2 4.2 0 0 1 0-5.9l5.5-5.5a4.2 4.2 0 0 1 5.9 5.9l-5.5 5.5a4.2 4.2 0 0 1-5.9 0Z" />
+          </svg>
         </span>{' '}
         متتبع الأدوية
       </h3>
 
       <p className="muted-text">
-        سجّل الأدوية اللي بتستخدمها
-        عشان تراجع سجل الاستخدام بمرور
-        الوقت وتقدر تعرضه على طبيبك أو
-        الصيدلي.
+        سجّل الأدوية التي تستخدمها لمراجعة
+        سجل الاستخدام بمرور الوقت وعرضه
+        على طبيبك أو الصيدلي.
       </p>
+
+      {loadError && (
+        <div
+          className="medication-load-error"
+          role="alert"
+          aria-live="assertive"
+        >
+          <div>
+            <strong>{loadError}</strong>
+            <p>
+              يمكنك تسجيل استخدام جديد، لكن لن يظهر
+              السجل السابق حتى ينجح التحميل.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="btn secondary"
+            onClick={handleRetryLoad}
+            disabled={loading}
+          >
+            {loading ? 'جارٍ التحميل...' : 'إعادة المحاولة'}
+          </button>
+        </div>
+      )}
 
       {error && (
         <p
@@ -384,23 +432,19 @@ function MedicationTracker() {
           style={{ marginTop: 6 }}
         >
           الجرعة اختيارية للتوثيق فقط،
-          ومش بيتم التحقق هنا من كونها
-          مناسبة ليك.
+          ولا يقيّم التطبيق مدى ملاءمتها لك.
         </p>
 
         <button
           type="button"
-          className="btn primary"
+          className="btn primary medication-submit"
           onClick={handleAdd}
-          disabled={
-            saving ||
-            !name.trim()
-          }
+          disabled={saving}
           aria-busy={saving}
         >
           {saving
             ? 'جارٍ الحفظ...'
-            : '+ تسجيل استخدام'}
+            : 'تسجيل الاستخدام'}
         </button>
       </div>
 
@@ -420,30 +464,11 @@ function MedicationTracker() {
         <div
           className="medication-note"
           style={{ marginTop: 16 }}
-          role="note"
         >
-          سجّلت {last24hCount} عملية
-          استخدام خلال آخر 24 ساعة.
-          العدد وحده ما يكفيش للحكم على
-          أمان الاستخدام؛ ده بيختلف حسب
-          الدواء والتركيز والجرعة الموصوفة
-          وحالتك الصحية.
+          سُجّلت {last24hCount} مرات استخدام خلال
+          آخر 24 ساعة.
         </div>
       )}
-
-      <div
-        className="medication-note"
-        style={{ marginTop: 12 }}
-        role="note"
-      >
-        مهم: السجل ده للتوثيق والمتابعة
-        فقط. التطبيق مش بيحدد الجرعة
-        المناسبة ومش بيقيّم التفاعلات
-        الدوائية. لو مش متأكد من الجرعة،
-        أو بتستخدم أكتر من دواء، اسأل
-        طبيبًا أو صيدليًا قبل تعديل
-        الاستخدام.
-      </div>
 
       {loading && (
         <p
@@ -457,12 +482,14 @@ function MedicationTracker() {
       )}
 
       {!loading &&
+        !loadError &&
         medications.length === 0 && (
           <p
             className="muted-text"
             style={{ marginTop: 16 }}
           >
-            مفيش أدوية مسجلة لسه.
+            لا توجد استخدامات مسجلة بعد. ابدأ بتسجيل
+            أول استخدام للدواء.
           </p>
         )}
 

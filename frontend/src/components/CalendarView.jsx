@@ -258,8 +258,8 @@ function CalendarView() {
     }
 
     return daysWithAssessments.has(day)
-      ? 'has-headache'
-      : 'good-day';
+      ? 'has-assessment'
+      : 'no-assessment';
   }
 
   function getCellLabel(day) {
@@ -275,7 +275,7 @@ function CalendarView() {
 
     const dateLabel =
       cellDate.toLocaleDateString(
-        'ar-EG',
+        'ar-EG-u-nu-latn',
         {
           day: 'numeric',
           month: 'long',
@@ -343,10 +343,19 @@ function CalendarView() {
   }
 
   return (
-    <div
+    <details
       className="card calendar-card"
-      aria-label="تقويم التقييمات"
     >
+      <summary className="calendar-disclosure-summary">
+        <span className="calendar-disclosure-title">
+          التقويم الشهري
+        </span>
+        <span className="calendar-disclosure-meta">
+          {monthNames[month]} {year} · {daysWithAssessments.size}{' '}
+          أيام بتقييم
+        </span>
+      </summary>
+
       <div className="calendar-header">
         <button
           type="button"
@@ -415,32 +424,28 @@ function CalendarView() {
         aria-label="مفتاح التقويم"
       >
         <span
-          className="legend-dot legend-red"
+          className="legend-dot legend-neutral"
           aria-hidden="true"
         />
 
-        <span>
-          يوم فيه تقييم مسجل
-        </span>
+        <span>يوم فيه تقييم مسجل</span>
 
         <span
-          className="legend-dot legend-green"
+          className="legend-dot legend-empty"
           aria-hidden="true"
         />
 
-        <span>
-          يوم بدون تقييم مسجل
-        </span>
+        <span>يوم دون تقييم مسجل</span>
       </div>
 
       <p
         className="muted-text"
         style={{ marginTop: 12 }}
       >
-        التقويم يوضح أيام وجود تقييمات مسجلة،
-        وليس بالضرورة أيام حدوث نوبة صداع فعلية.
+        يوضح التقويم الأيام التي سُجل فيها تقييم، وليس
+        بالضرورة أيام حدوث نوبة صداع.
       </p>
-    </div>
+    </details>
   );
 }
 

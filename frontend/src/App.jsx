@@ -489,7 +489,13 @@ function AppContent() {
             ? 'content content-assessment'
             : activeView === 'results'
               ? 'content content-results'
-              : 'content'
+              : activeView === 'plan'
+                ? 'content content-plan'
+                : activeView === 'compare'
+                  ? 'content content-comparison'
+                  : activeView === 'diary'
+                    ? 'content content-diary'
+                    : 'content'
         }
       >
         {renderView()}
