@@ -487,7 +487,9 @@ function AppContent() {
         className={
           activeView === 'assess'
             ? 'content content-assessment'
-            : 'content'
+            : activeView === 'results'
+              ? 'content content-results'
+              : 'content'
         }
       >
         {renderView()}

@@ -3,6 +3,15 @@ import { API_URL } from '../config';
 
 const MAX_PLACES_TO_SHOW = 20;
 
+const primaryTypeLabels = Object.freeze({
+  tension: 'صداع توتري محتمل',
+  migraine: 'صداع نصفي محتمل',
+  cluster: 'صداع عنقودي محتمل',
+  sinus: 'نمط مرتبط بالجيوب الأنفية',
+  eye_strain: 'إجهاد العين',
+  dehydration: 'نمط قد يرتبط بالجفاف',
+});
+
 function isValidPlace(place) {
   return (
     place &&
@@ -28,7 +37,7 @@ function Results({ analysisData, onNavigate }) {
 
     if (!navigator.geolocation) {
       setPlacesError(
-        'المتصفح مايدعمش تحديد الموقع الجغرافي.'
+        'المتصفح لا يدعم تحديد الموقع الجغرافي.'
       );
       setLoadingPlaces(false);
       return;
@@ -107,14 +116,14 @@ function Results({ analysisData, onNavigate }) {
 
         if (error?.code === 1) {
           setPlacesError(
-            'محتاجين إذن الوصول لموقعك عشان نلاقي أماكن قريبة منك.'
+            'يلزم السماح بالوصول إلى موقعك للبحث عن أماكن قريبة.'
           );
           return;
         }
 
         if (error?.code === 2) {
           setPlacesError(
-            'تعذر تحديد موقعك حاليًا. حاول مرة أخرى أو تأكد من تشغيل خدمات الموقع.'
+            'تعذر تحديد موقعك حاليًا. حاول مرة أخرى أو تحقق من تفعيل خدمات الموقع.'
           );
           return;
         }
@@ -137,7 +146,7 @@ function Results({ analysisData, onNavigate }) {
         <h2>لا توجد نتائج بعد</h2>
 
         <p className="muted-text">
-          لازم تكمل تقييم الصداع الأول عشان تظهر النتائج هنا.
+          أكمل تقييم الصداع أولًا لعرض النتائج هنا.
         </p>
 
         <button
@@ -173,16 +182,13 @@ function Results({ analysisData, onNavigate }) {
     analysisData.emergency === true;
 
   return (
-    <div>
-      <div className="page-head">
-        <div>
-          <h1>نتائج التقييم</h1>
-          <p className="muted-text">
-            النتائج دي مبنية على وصفك للأعراض وهدفها
-            التوعية وتوجيهك للخطوة المناسبة، ومش تشخيص طبي نهائي.
-          </p>
-        </div>
-      </div>
+    <div className="results-page">
+      <header className="results-heading">
+        <h1>نتائج التقييم</h1>
+        <p>
+          تستند هذه النتائج إلى وصفك للأعراض، وتهدف إلى التوعية ومساعدتك في اختيار الخطوة التالية. وهي ليست تشخيصًا طبيًا.
+        </p>
+      </header>
 
       {isEmergency && (
         <div
@@ -190,71 +196,85 @@ function Results({ analysisData, onNavigate }) {
           role="alert"
           style={{ marginBottom: 18 }}
         >
-          <strong>مهم:</strong> المعلومات المسجلة تشير إلى
-          وجود علامة تستدعي تقييمًا طبيًا عاجلًا. ما تعتمدش
-          على نتيجة التطبيق لتأجيل طلب المساعدة الطبية.
+          <strong>مهم:</strong> تشير المعلومات المسجلة إلى علامة تستدعي تقييمًا طبيًا عاجلًا. لا تعتمد على نتيجة التطبيق لتأجيل طلب المساعدة الطبية.
         </div>
       )}
 
-      <div className="card">
-        <div className="analysis-result no-border">
+      <section className="results-panel results-summary">
+        {!isEmergency && (
+          <h2 className="results-pattern">
+            النمط المحتمل:{' '}
+            {primaryTypeLabels[analysisData.primaryType] ||
+              'نمط يحتاج إلى مراجعة'}
+          </h2>
+        )}
+
+        <div className="results-analysis">
           {analysisText ? (
             <p>{analysisText}</p>
           ) : (
-            <p className="muted-text">
-              مفيش وصف تفصيلي متاح للنتيجة.
+            <p>
+              لا يتوفر وصف تفصيلي لهذه النتيجة.
             </p>
           )}
 
           {specialtyArabic && !isEmergency && (
-            <div
-              className="specialty-box"
-              style={{ marginTop: 16 }}
-            >
-              <strong>التخصص المقترح مبدئيًا:</strong>{' '}
+            <div className="results-highlight">
+              <strong>التخصص المقترح مبدئيًا:</strong>
               {specialtyArabic}
             </div>
           )}
 
           {isEmergency && (
-            <div
-              className="specialty-box"
-              style={{ marginTop: 16 }}
-            >
-              <strong>
-                الأولوية: التقييم الطبي العاجل
-              </strong>
-              <p style={{ marginTop: 8 }}>
-                التخصص المقترح مش هو الأولوية في حالة وجود
-                علامة خطر. اطلب المساعدة الطبية العاجلة
-                حسب شدة الأعراض.
+            <div className="results-highlight">
+              <strong>الأولوية: التقييم الطبي العاجل</strong>
+              <p>
+                لا تجعل التخصص المقترح أولوية عند وجود علامة خطر. اطلب المساعدة الطبية العاجلة بحسب شدة الأعراض.
               </p>
             </div>
           )}
         </div>
-      </div>
 
-      <div
-        className="card doctors-section"
-        style={{ marginTop: 18 }}
-      >
+        <p className="results-review-note" role="note">
+          هذا تصنيف آلي مبدئي، وقد لا يتطابق تمامًا مع وصف الأعراض. ينبغي مراجعة النتيجة مع مختص صحي، ولا تُعد تشخيصًا.
+        </p>
+      </section>
+
+      <section className="results-panel results-doctors">
         <h2>أماكن طبية قريبة</h2>
 
-        <p className="muted-text">
-          لو حابب، ممكن نستخدم موقع جهازك للبحث عن أماكن
-          طبية قريبة. موقعك لا نحتاجه لعرض نتيجة التقييم.
+        <p>
+          يمكنك البحث عن أطباء وعيادات قريبة منك.
         </p>
+
+        <div className="results-privacy-note" role="note">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <rect x="4" y="10" width="16" height="11" rx="2" />
+            <path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3" />
+          </svg>
+          <span>
+            يُستخدم موقع جهازك للبحث عن أماكن قريبة فقط، ولا نحتاج إليه لعرض نتيجة التقييم.
+          </span>
+        </div>
 
         <button
           type="button"
-          className="btn primary"
+          className="results-nearby-button"
           onClick={findNearbyDoctors}
           disabled={loadingPlaces}
-          style={{ marginTop: 12 }}
         >
           {loadingPlaces
-            ? 'جارٍ البحث...'
-            : 'دور على دكاترة وعيادات قريبة'}
+            ? 'جارٍ البحث عن عيادات قريبة...'
+            : 'ابحث عن عيادات قريبة'}
         </button>
 
         {placesError && (
@@ -273,7 +293,7 @@ function Results({ analysisData, onNavigate }) {
             className="muted-text"
             style={{ marginTop: 14 }}
           >
-            مفيش نتائج قريبة متاحة حاليًا.
+            لا تتوفر نتائج قريبة حاليًا.
           </p>
         )}
 
@@ -308,6 +328,24 @@ function Results({ analysisData, onNavigate }) {
             })}
           </ul>
         )}
+
+      </section>
+
+      <div className="results-actions">
+        <button
+          type="button"
+          className="results-report-button"
+          onClick={() => onNavigate('report')}
+        >
+          إنشاء تقرير للطبيب
+        </button>
+        <button
+          type="button"
+          className="results-retake-button"
+          onClick={() => onNavigate('assess')}
+        >
+          إعادة التقييم
+        </button>
       </div>
     </div>
   );

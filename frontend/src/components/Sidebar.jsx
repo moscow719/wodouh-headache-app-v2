@@ -107,6 +107,7 @@ function Sidebar({
   highContrast,
   setHighContrast,
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] =
     useState(false);
 
@@ -180,7 +181,7 @@ function Sidebar({
 
   return (
     <aside
-      className="sidebar"
+      className={`sidebar${menuOpen ? ' menu-open' : ''}`}
       aria-label="القائمة الجانبية"
     >
       <div className="brand">
@@ -191,8 +192,34 @@ function Sidebar({
         />
       </div>
 
+      <button
+        type="button"
+        className="mobile-menu-toggle"
+        aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+        aria-expanded={menuOpen}
+        aria-controls="primary-navigation"
+        onClick={() => setMenuOpen((open) => !open)}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          {menuOpen ? (
+            <path d="m6 6 12 12M18 6 6 18" />
+          ) : (
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          )}
+        </svg>
+      </button>
+
       <nav
-        className="nav"
+        id="primary-navigation"
+        className={`nav${menuOpen ? ' is-open' : ''}`}
         aria-label="التنقل الرئيسي"
       >
         {navItems.map((item) => {
@@ -208,9 +235,10 @@ function Sidebar({
                   ? 'active'
                   : ''
               }
-              onClick={() =>
-                onNavigate(item.id)
-              }
+              onClick={() => {
+                onNavigate(item.id);
+                setMenuOpen(false);
+              }}
               aria-current={
                 isActive
                   ? 'page'

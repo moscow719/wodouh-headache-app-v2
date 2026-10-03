@@ -528,6 +528,7 @@ If it IS headache-related:
 - Use only one of these primaryType values:
   tension, migraine, cluster, sinus, eye_strain, dehydration
 - Never invent another type.
+- Ensure every sentence in analysis is consistent with primaryType; do not describe a different headache pattern as though it supports the selected type.
 - Use cautious language such as "may be consistent with" or "some overlap with".
 - Keep analysis between 3 and 5 sentences maximum.
 - Always end the analysis by reminding the user that only a doctor can confirm a real diagnosis.

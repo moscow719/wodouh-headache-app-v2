@@ -171,6 +171,10 @@ svg {
   line-height: 1.5;
 }
 
+.mobile-menu-toggle {
+  display: none;
+}
+
 /* ---------- Content ---------- */
 
 .content {
@@ -775,6 +779,212 @@ svg {
   background: #e2f0ee;
   padding: 4px 10px;
   border-radius: 999px;
+}
+
+.content-results {
+  max-width: none;
+  min-height: 100vh;
+  padding: 0;
+  background: #121212;
+  color: #f0f0ed;
+}
+
+.results-page {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 22px 30px 34px;
+  color: #f0f0ed;
+}
+
+.results-heading {
+  margin-bottom: 18px;
+}
+
+.results-heading h1 {
+  margin: 0 0 5px;
+  color: #f4f4f0;
+  font-size: 1.25rem;
+}
+
+.results-heading p,
+.results-doctors > p {
+  margin: 0;
+  color: #b8b8b3;
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+
+.results-panel {
+  margin-bottom: 12px;
+  padding: 16px;
+  border: 1px solid #353535;
+  border-radius: 13px;
+  background: #191919;
+}
+
+.results-pattern {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #17332f;
+  color: #f3f4f1;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.results-analysis > p {
+  margin: 0;
+  color: #e0e0dc;
+  font-size: 0.86rem;
+  line-height: 1.85;
+}
+
+.results-highlight {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #17332f;
+  color: #e4ece9;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.results-highlight strong {
+  color: #fff;
+}
+
+.results-highlight p {
+  margin: 0;
+}
+
+.results-review-note {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #151515;
+  color: #c6c6c0;
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+
+.results-doctors {
+  margin-bottom: 14px;
+}
+
+.results-doctors h2 {
+  margin: 0 0 5px;
+  color: #f0f0ed;
+  font-size: 0.96rem;
+}
+
+.results-privacy-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #151515;
+  color: #ddd;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.results-privacy-note svg {
+  width: 19px;
+  height: 19px;
+  flex: none;
+  color: #16aaa3;
+}
+
+.results-nearby-button {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 10px;
+  padding: 10px 14px;
+  border: 1px solid #484848;
+  border-radius: 9px;
+  background: transparent;
+  color: #f0f0ed;
+  font: inherit;
+  font-size: 0.84rem;
+  cursor: pointer;
+}
+
+.results-nearby-button:hover:not(:disabled) {
+  border-color: #16aaa3;
+  background: #17332f;
+}
+
+.results-nearby-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.results-page .muted-text {
+  color: #b8b8b3;
+}
+
+.results-page .analysis-error {
+  color: #ffaca0;
+}
+
+.results-page .place-item {
+  border-color: #444;
+  background: #191919;
+  color: #eee;
+}
+
+.results-page .place-type {
+  background: #17332f;
+  color: #d8efea;
+}
+
+.results-actions {
+  display: grid;
+  gap: 4px;
+}
+
+.results-report-button {
+  min-height: 52px;
+  border: 0;
+  border-radius: 10px;
+  background: #138f87;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.results-report-button:hover {
+  background: #0d7d75;
+}
+
+.results-retake-button {
+  justify-self: center;
+  min-height: 42px;
+  padding: 8px 16px;
+  border: 0;
+  background: transparent;
+  color: #b8b8b3;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.results-retake-button:hover {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 /* ---------- Disclaimer ---------- */
@@ -2122,23 +2332,64 @@ body.high-contrast .place-type {
 
   .sidebar {
     width: 100%;
+    min-height: 58px;
+    height: 58px;
     flex-direction: row;
     align-items: center;
-    padding: 12px 14px;
-    gap: 14px;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 14px;
+    overflow: visible;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #0c203d;
   }
 
   .brand {
+    min-height: 0;
     padding: 0;
     flex: none;
   }
 
-  .nav {
-    flex-direction: row;
+  .brand-logo {
+    width: 104px;
+  }
+
+  .mobile-menu-toggle {
+    display: grid;
+    width: 40px;
+    height: 40px;
     flex: none;
-    min-width: max-content;
+    place-items: center;
+    border: 1px solid #52647c;
+    border-radius: 9px;
+    background: transparent;
+    color: #fff;
+  }
+
+  .mobile-menu-toggle svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .nav {
+    display: none;
+  }
+
+  .nav.is-open {
+    display: flex;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px;
+    border: 1px solid #2b3c48;
+    border-radius: 0 0 12px 12px;
+    background: #0c203d;
+    box-shadow: 0 12px 24px rgb(0 0 0 / 28%);
   }
 
   .nav button {
@@ -2149,19 +2400,37 @@ body.high-contrast .place-type {
   }
 
   .a11y-controls {
+    display: none;
+  }
+
+  .sidebar.menu-open {
+    height: auto;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sidebar.menu-open .a11y-controls {
+    display: flex;
     flex: none;
-    min-width: 150px;
-    border-top: none;
-    border-right: 1px solid #2b3c48;
-    padding-top: 0;
-    padding-right: 14px;
-    margin-top: 0;
+    min-width: 0;
+    border-top: 1px solid #2b3c48;
+    border-right: 0;
+    padding: 12px 4px;
+    margin-top: 8px;
   }
 
   .logout-button {
-    width: auto;
-    min-width: max-content;
-    margin-top: 0;
+    display: none;
+  }
+
+  .sidebar.menu-open .logout-button {
+    display: flex;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .sidebar.menu-open .sidebar-footer {
+    display: block;
   }
 
   .sidebar-footer {
@@ -2170,6 +2439,19 @@ body.high-contrast .place-type {
 
   .content {
     padding: 20px 16px 40px;
+  }
+
+  .content-results {
+    min-height: calc(100vh - 58px);
+    padding: 0;
+  }
+
+  .results-page {
+    padding: 18px 14px 24px;
+  }
+
+  .results-panel {
+    padding: 13px;
   }
 
   .content-assessment {
