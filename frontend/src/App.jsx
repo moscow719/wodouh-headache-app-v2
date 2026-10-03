@@ -495,7 +495,9 @@ function AppContent() {
                   ? 'content content-comparison'
                   : activeView === 'diary'
                     ? 'content content-diary'
-                    : 'content'
+                    : activeView === 'home'
+                      ? 'content content-home'
+                      : 'content'
         }
       >
         {renderView()}

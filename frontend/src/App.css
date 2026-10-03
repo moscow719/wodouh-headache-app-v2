@@ -179,6 +179,12 @@ svg {
   width: 100%;
 }
 
+.content-home {
+  max-width: none;
+  padding: 0;
+  background: #121212;
+}
+
 .card {
   background: #ffffff;
   border: 1px solid #dbe3e6;
@@ -1120,12 +1126,24 @@ svg {
   --home-muted: #b8b8b3;
   --home-teal: #119b91;
 
-  min-height: calc(100vh - 68px);
-  margin: -34px;
-  padding: 24px 30px 20px;
+  min-height: 100vh;
+  margin: 0;
+  padding: 24px clamp(30px, 5vw, 72px) 28px;
   background: var(--home-bg);
   color: var(--home-text);
   direction: rtl;
+}
+
+.home-dashboard > * {
+  max-width: 1120px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.home-dashboard .home-header,
+.home-dashboard .home-welcome,
+.home-dashboard .home-start-button {
+  max-width: 1120px;
 }
 
 .home-dashboard .muted-text {
@@ -3321,6 +3339,10 @@ body.high-contrast .place-type {
     padding: 20px 16px 40px;
   }
 
+  .content-home {
+    padding: 0;
+  }
+
   .content-results {
     min-height: calc(100vh - 58px);
     padding: 0;
@@ -3370,8 +3392,8 @@ body.high-contrast .place-type {
   }
 
   .home-dashboard {
-    min-height: calc(100vh - 60px);
-    margin: -20px -16px -40px;
+    min-height: calc(100vh - 58px);
+    margin: 0;
     padding: 20px 16px 26px;
   }
 
