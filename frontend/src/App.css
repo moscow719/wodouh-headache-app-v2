@@ -76,6 +76,10 @@ svg {
   padding: 22px 16px;
 }
 
+.sidebar.assessment-nav {
+  display: none;
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -3252,6 +3256,10 @@ body.high-contrast .place-type {
     background: #0c203d;
   }
 
+  .sidebar.assessment-nav {
+    display: flex;
+  }
+
   .brand {
     min-height: 0;
     padding: 0;
@@ -3357,8 +3365,14 @@ body.high-contrast .place-type {
   }
 
   .content-assessment {
-    min-height: 100vh;
+    min-height: calc(100vh - 58px);
     padding: 0;
+  }
+
+  .content-assessment .question-screen,
+  .content-assessment .describe-screen,
+  .content-assessment .emergency-screen {
+    min-height: calc(100vh - 58px);
   }
 
   .content-assessment > .card {

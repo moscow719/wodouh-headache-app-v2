@@ -106,6 +106,7 @@ function Sidebar({
   setFontScale,
   highContrast,
   setHighContrast,
+  isAssessment = false,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] =
@@ -181,7 +182,9 @@ function Sidebar({
 
   return (
     <aside
-      className={`sidebar${menuOpen ? ' menu-open' : ''}`}
+      className={`sidebar${menuOpen ? ' menu-open' : ''}${
+        isAssessment ? ' assessment-nav' : ''
+      }`}
       aria-label="القائمة الجانبية"
     >
       <div className="brand">

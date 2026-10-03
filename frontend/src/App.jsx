@@ -472,16 +472,15 @@ function AppContent() {
           : 'app-shell'
       }
     >
-      {activeView !== 'assess' && (
-        <Sidebar
-          activeView={activeView}
-          onNavigate={handleNavigate}
-          fontScale={fontScale}
-          setFontScale={setFontScale}
-          highContrast={highContrast}
-          setHighContrast={setHighContrast}
-        />
-      )}
+      <Sidebar
+        activeView={activeView}
+        onNavigate={handleNavigate}
+        fontScale={fontScale}
+        setFontScale={setFontScale}
+        highContrast={highContrast}
+        setHighContrast={setHighContrast}
+        isAssessment={activeView === 'assess'}
+      />
 
       <main
         className={
