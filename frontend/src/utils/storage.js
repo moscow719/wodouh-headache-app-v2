@@ -17,6 +17,35 @@ const ALLOWED_PRIMARY_TYPES = new Set([
   'dehydration',
 ]);
 
+function logSupabaseError(operation, error) {
+  console.error(operation, {
+    name:
+      typeof error?.name === 'string'
+        ? error.name
+        : undefined,
+    message:
+      typeof error?.message === 'string'
+        ? error.message
+        : String(error),
+    status:
+      Number.isInteger(error?.status)
+        ? error.status
+        : undefined,
+    code:
+      typeof error?.code === 'string'
+        ? error.code
+        : undefined,
+    details:
+      typeof error?.details === 'string'
+        ? error.details
+        : undefined,
+    hint:
+      typeof error?.hint === 'string'
+        ? error.hint
+        : undefined,
+  });
+}
+
 function isValidDateString(value) {
   if (typeof value !== 'string' || !value.trim()) {
     return false;
@@ -64,18 +93,44 @@ function normalizeOptionalString(value, maxLength) {
 }
 
 async function getCurrentUser() {
+  let result;
+
+  try {
+    result = await supabase.auth.getUser();
+  } catch (error) {
+    logSupabaseError(
+      'Failed to get current user from Supabase Auth:',
+      error
+    );
+    throw new Error(
+      'تعذر التحقق من المستخدم الحالي.',
+      { cause: error }
+    );
+  }
+
   const {
     data: { user },
     error,
-  } = await supabase.auth.getUser();
+  } = result;
 
   if (error) {
-    console.error('Failed to get current user:', error.message);
-    throw new Error('تعذر التحقق من المستخدم الحالي.');
+    logSupabaseError(
+      'Supabase Auth getUser failed:',
+      error
+    );
+    throw new Error(
+      'تعذر التحقق من المستخدم الحالي.',
+      { cause: error }
+    );
   }
 
   if (!user) {
-    throw new Error('لازم تسجل دخول عشان تستخدم بياناتك.');
+    console.error(
+      'Supabase Auth returned no current user while loading user data.'
+    );
+    throw new Error(
+      'لازم تسجل دخول عشان تستخدم بياناتك.'
+    );
   }
 
   return user;
@@ -467,40 +522,86 @@ async function saveMedication(name, dose) {
 async function getMedications() {
   await getCurrentUser();
 
-  const {
-    data,
-    error,
-  } = await supabase
-    .from('medications')
-    .select(
-      'id, created_at, taken_at, name, dose'
-    )
-    .order('taken_at', {
-      ascending: false,
-    })
-    .limit(MAX_MEDICATIONS_TO_LOAD);
+  let result;
+
+  try {
+    result = await supabase
+      .from('medications')
+      .select(
+        'id, created_at, taken_at, name, dose'
+      )
+      .order('taken_at', {
+        ascending: false,
+      })
+      .limit(MAX_MEDICATIONS_TO_LOAD);
+  } catch (error) {
+    logSupabaseError(
+      'Medication SELECT request threw before returning a response:',
+      error
+    );
+    throw new Error(
+      'تعذر تحميل سجل الأدوية.',
+      { cause: error }
+    );
+  }
+
+  const { data, error } = result;
 
   if (error) {
-    console.error(
+    logSupabaseError(
       'Failed to fetch medications:',
-      error.message
+      error
     );
 
-    throw new Error('تعذر تحميل سجل الأدوية.');
+    throw new Error(
+      'تعذر تحميل سجل الأدوية.',
+      { cause: error }
+    );
   }
 
   if (!Array.isArray(data)) {
+    console.error(
+      'Supabase returned a non-array medication response:',
+      {
+        responseType:
+          data === null
+            ? 'null'
+            : typeof data,
+      }
+    );
     throw new Error('بيانات الأدوية غير صالحة.');
   }
 
-  return data.filter(
+  const medications = data.filter(
     (item) =>
       item &&
       typeof item === 'object' &&
+      !Array.isArray(item) &&
+      (item.id === undefined ||
+        typeof item.id === 'string') &&
       typeof item.name === 'string' &&
       item.name.trim().length > 0 &&
+      (item.dose === undefined ||
+        item.dose === null ||
+        (typeof item.dose === 'string' &&
+          item.dose.trim().length <=
+            MAX_MEDICATION_DOSE_LENGTH)) &&
       isValidDateString(item.taken_at)
   );
+
+  if (data.length > 0 && medications.length === 0) {
+    console.error(
+      'Supabase returned medication rows, but none had a valid record shape:',
+      {
+        returnedRecordCount: data.length,
+      }
+    );
+    throw new Error(
+      'بيانات الأدوية غير صالحة.'
+    );
+  }
+
+  return medications;
 }
 
 /**

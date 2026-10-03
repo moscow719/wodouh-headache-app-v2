@@ -124,7 +124,16 @@ function MedicationTracker() {
       } catch (err) {
         console.error(
           'Failed to load medications:',
-          err
+          {
+            message:
+              typeof err?.message === 'string'
+                ? err.message
+                : String(err),
+            cause:
+              typeof err?.cause?.message === 'string'
+                ? err.cause.message
+                : undefined,
+          }
         );
 
         if (isMounted) {
@@ -488,8 +497,7 @@ function MedicationTracker() {
             className="muted-text"
             style={{ marginTop: 16 }}
           >
-            لا توجد استخدامات مسجلة بعد. ابدأ بتسجيل
-            أول استخدام للدواء.
+            لا توجد أدوية مسجلة بعد.
           </p>
         )}
 
