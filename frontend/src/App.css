@@ -1512,8 +1512,8 @@ body.high-contrast .report-simple-list li {
   color: #70401d !important;
 }
 
-.disclaimer-card .emergency-note strong {
-  color: #7b351f;
+#disclaimer-description > .emergency-note strong {
+  color: #7b351f !important;
 }
 
 .disclaimer-card .agree-checkbox {
