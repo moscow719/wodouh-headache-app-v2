@@ -20,6 +20,7 @@ const STORAGE_KEYS = Object.freeze({
   disclaimerAgreed: 'neuropath_disclaimer_agreed',
   analysisDataPrefix: 'neuropath_analysis_data',
   legacyAnalysisData: 'neuropath_analysis_data',
+  reportDetailsPrefix: 'wodouh_report_details',
 });
 
 const VALID_VIEWS = new Set([
@@ -175,6 +176,8 @@ function AppContent() {
   const [hasAgreed, setHasAgreed] = useState(false);
   const [activeView, setActiveView] = useState('home');
   const [analysisData, setAnalysisData] = useState(null);
+  const [selectedAssessment, setSelectedAssessment] =
+    useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -373,13 +376,58 @@ function AppContent() {
     }
   }
 
-  function handleAnalysisComplete(data) {
+  function handleAnalysisComplete(data, assessmentDetails) {
     if (!isValidAnalysisData(data)) {
       console.error('Invalid analysis data received:', data);
       return;
     }
 
+    const userId = session?.user?.id;
+
+    if (
+      userId &&
+      assessmentDetails &&
+      typeof assessmentDetails === 'object' &&
+      typeof assessmentDetails.assessmentId === 'string'
+    ) {
+      try {
+        localStorage.setItem(
+          `${STORAGE_KEYS.reportDetailsPrefix}_${userId}`,
+          JSON.stringify(assessmentDetails)
+        );
+      } catch (error) {
+        console.error(
+          'Failed to save report assessment details:',
+          error
+        );
+      }
+    }
+
+    setSelectedAssessment(null);
     setAnalysisData(data);
+    setActiveView('results');
+  }
+
+  function handleShowAssessment(assessment) {
+    if (
+      !assessment ||
+      typeof assessment !== 'object' ||
+      typeof assessment.analysis !== 'string'
+    ) {
+      console.error(
+        'Cannot display invalid saved assessment:',
+        assessment
+      );
+      return;
+    }
+
+    setSelectedAssessment({
+      analysis: assessment.analysis,
+      primaryType: assessment.primaryType,
+      confidence: assessment.confidence,
+      specialty: assessment.specialty,
+      date: assessment.date,
+    });
     setActiveView('results');
   }
 
@@ -394,6 +442,7 @@ function AppContent() {
       return;
     }
 
+    setSelectedAssessment(null);
     setActiveView(view);
   }
 
@@ -413,7 +462,10 @@ function AppContent() {
       case 'results':
         return (
           <Results
-            analysisData={analysisData}
+            analysisData={
+              selectedAssessment || analysisData
+            }
+            assessmentDate={selectedAssessment?.date}
             onNavigate={handleNavigate}
           />
         );
@@ -425,10 +477,20 @@ function AppContent() {
         return <ComparisonTable />;
 
       case 'diary':
-        return <Diary onNavigate={handleNavigate} />;
+        return (
+          <Diary
+            onNavigate={handleNavigate}
+            onShowAssessment={handleShowAssessment}
+          />
+        );
 
       case 'report':
-        return <Report onNavigate={handleNavigate} />;
+        return (
+          <Report
+            onNavigate={handleNavigate}
+            userId={session?.user?.id}
+          />
+        );
 
       case 'assistant':
         return <Assistant />;
@@ -494,9 +556,13 @@ function AppContent() {
                   ? 'content content-comparison'
                   : activeView === 'diary'
                     ? 'content content-diary'
-                    : activeView === 'home'
-                      ? 'content content-home'
-                      : 'content'
+                    : activeView === 'report'
+                      ? 'content content-report'
+                      : activeView === 'assistant'
+                        ? 'content content-assistant'
+                        : activeView === 'home'
+                          ? 'content content-home'
+                          : 'content'
         }
       >
         {renderView()}

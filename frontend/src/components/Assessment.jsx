@@ -501,9 +501,17 @@ function Assessment({ onAnalysisComplete, onExit }) {
         data?.success &&
         data?.isHeadacheRelated === true
       ) {
-        await saveAssessment(data);
+        const savedAssessment =
+          await saveAssessment(data);
+
+        onAnalysisComplete(data, {
+          assessmentId: savedAssessment.id,
+          redFlagAnswers,
+          selectedRegion,
+          painLevel,
+          description: trimmedDescription,
+        });
         clearAssessmentDraft();
-        onAnalysisComplete(data);
         return;
       }
 

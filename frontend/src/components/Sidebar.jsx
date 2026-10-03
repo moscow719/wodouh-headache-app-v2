@@ -29,7 +29,7 @@ const navItems = Object.freeze([
   },
   {
     id: 'diary',
-    label: 'سجل التقييمات',
+    label: 'سجل الصداع',
     icon: 'diary',
   },
   {

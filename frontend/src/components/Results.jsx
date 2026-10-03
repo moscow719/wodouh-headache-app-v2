@@ -21,7 +21,11 @@ function isValidPlace(place) {
   );
 }
 
-function Results({ analysisData, onNavigate }) {
+function Results({
+  analysisData,
+  assessmentDate,
+  onNavigate,
+}) {
   const [loadingPlaces, setLoadingPlaces] = useState(false);
   const [places, setPlaces] = useState(null);
   const [placesError, setPlacesError] = useState(null);
@@ -181,6 +185,21 @@ function Results({ analysisData, onNavigate }) {
     analysisData.isEmergency === true ||
     analysisData.emergency === true;
 
+  const savedAssessmentDate =
+    typeof assessmentDate === 'string' &&
+    !Number.isNaN(new Date(assessmentDate).getTime())
+      ? new Date(assessmentDate).toLocaleString(
+          'ar-EG-u-nu-latn',
+          {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          }
+        )
+      : null;
+
   return (
     <div className="results-page">
       <header className="results-heading">
@@ -188,6 +207,11 @@ function Results({ analysisData, onNavigate }) {
         <p>
           تستند هذه النتائج إلى وصفك للأعراض، وتهدف إلى التوعية ومساعدتك في اختيار الخطوة التالية. وهي ليست تشخيصًا طبيًا.
         </p>
+        {savedAssessmentDate && (
+          <p className="results-saved-date">
+            نتيجة التقييم المسجل في {savedAssessmentDate}
+          </p>
+        )}
       </header>
 
       {isEmergency && (

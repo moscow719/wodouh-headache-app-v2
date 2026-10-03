@@ -858,7 +858,7 @@ app.post('/api/chat', rateLimit, async (req, res) => {
   );
 
   const systemInstructions = `
-You are a friendly assistant inside a headache-awareness tool called "NeuroPath".
+You are a friendly assistant inside a headache-awareness tool called "Wodouh" (وضوح).
 
 Context about the user's latest assessment:
 

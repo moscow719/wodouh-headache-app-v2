@@ -38,23 +38,26 @@ function formatDate(dateValue) {
   );
 }
 
-function formatConfidence(confidence) {
-  const numericConfidence =
-    Number(confidence);
+function getConfidenceLabel(confidence) {
+  const numericConfidence = Number(confidence);
 
   if (
-    !Number.isFinite(
-      numericConfidence
-    ) ||
+    !Number.isFinite(numericConfidence) ||
     numericConfidence < 0 ||
     numericConfidence > 100
   ) {
-    return '—';
+    return 'غير متاح';
   }
 
-  return `${Math.round(
-    numericConfidence
-  )}%`;
+  if (numericConfidence >= 70) {
+    return 'توافق مرتفع';
+  }
+
+  if (numericConfidence >= 40) {
+    return 'توافق متوسط';
+  }
+
+  return 'توافق منخفض';
 }
 
 function getTypeLabel(primaryType) {
@@ -108,7 +111,7 @@ function isValidAssessment(assessment) {
   );
 }
 
-function Diary({ onNavigate }) {
+function Diary({ onNavigate, onShowAssessment }) {
   const [assessments, setAssessments] =
     useState([]);
 
@@ -215,7 +218,7 @@ function Diary({ onNavigate }) {
       <div className="page-head">
         <div>
           <h1>
-            سجل التقييمات
+            سجل الصداع
           </h1>
 
           <p className="muted-text">
@@ -261,109 +264,164 @@ function Diary({ onNavigate }) {
         <>
           <CalendarView />
 
-          <div className="card diary-records-card">
-            <div className="diary-confidence-context" role="note">
-              * نسبة التوافق مؤشر خوارزمي للمقارنة فقط؛
-              وليست احتمالًا للإصابة أو تشخيصًا طبيًا.
+          <section
+            className="diary-records-section"
+            aria-labelledby="diary-records-title"
+          >
+            <h2
+              id="diary-records-title"
+              className="diary-section-title"
+            >
+              التقييمات
+            </h2>
+
+            <div className="card diary-records-card">
+              <table className="diary-table">
+                <caption className="sr-only">
+                  نتائج التقييمات المسجلة
+                </caption>
+
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      التاريخ والوقت
+                    </th>
+
+                    <th scope="col">
+                      النمط المسجل
+                    </th>
+
+                    <th scope="col">
+                      درجة التوافق
+                    </th>
+
+                    <th scope="col">
+                      التخصص المناسب للمناقشة
+                    </th>
+
+                    <th scope="col">
+                      النتيجة
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {assessments.map(
+                    (item, index) => {
+                      const rowKey =
+                        typeof item.id ===
+                          'string' &&
+                        item.id
+                          ? item.id
+                          : `${item.date}-${index}`;
+
+                      return (
+                        <tr key={rowKey}>
+                          <td>
+                            {formatDate(
+                              item.date
+                            )}
+                          </td>
+
+                          <td>
+                            {getTypeLabel(
+                              item.primaryType
+                            )}
+                          </td>
+
+                          <td>
+                            <span className="diary-confidence-badge">
+                              {getConfidenceLabel(
+                                item.confidence
+                              )}
+                            </span>
+                          </td>
+
+                          <td>
+                            {getSpecialtyLabel(
+                              item.specialty
+                            )}
+                          </td>
+
+                          <td>
+                            <button
+                              type="button"
+                              className="diary-view-result"
+                              onClick={() =>
+                                onShowAssessment(item)
+                              }
+                              disabled={
+                                typeof item.analysis !== 'string'
+                              }
+                            >
+                              عرض النتيجة كاملة
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    }
+                  )}
+                </tbody>
+              </table>
+
+              <div className="diary-mobile-list">
+                {assessments.map((item, index) => {
+                  const rowKey =
+                    typeof item.id === 'string' && item.id
+                      ? item.id
+                      : `${item.date}-${index}`;
+
+                  return (
+                    <article
+                      className="diary-mobile-entry"
+                      key={rowKey}
+                    >
+                      <p className="diary-mobile-date">
+                        {formatDate(item.date)}
+                      </p>
+                      <h2>{getTypeLabel(item.primaryType)}</h2>
+                      <span
+                        className="diary-confidence-badge"
+                        aria-label={`درجة التوافق: ${getConfidenceLabel(
+                          item.confidence
+                        )}`}
+                      >
+                        {getConfidenceLabel(item.confidence)}
+                      </span>
+                      <p className="diary-mobile-specialty">
+                        <strong>
+                          التخصص المناسب للنقاش:
+                        </strong>{' '}
+                        {getSpecialtyLabel(item.specialty)}
+                      </p>
+                      <button
+                        type="button"
+                        className="diary-view-result"
+                        onClick={() =>
+                          onShowAssessment(item)
+                        }
+                        disabled={
+                          typeof item.analysis !== 'string'
+                        }
+                      >
+                        عرض النتيجة كاملة
+                      </button>
+                    </article>
+                  );
+                })}
+              </div>
             </div>
-            <table className="diary-table">
-              <caption className="sr-only">
-                نتائج التقييمات المسجلة
-              </caption>
+          </section>
 
-              <thead>
-                <tr>
-                  <th scope="col">
-                    التاريخ والوقت
-                  </th>
-
-                  <th scope="col">
-                    النمط المسجل
-                  </th>
-
-                  <th scope="col">
-                    نسبة التوافق*
-                  </th>
-
-                  <th scope="col">
-                    التخصص المناسب للمناقشة
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {assessments.map(
-                  (item, index) => {
-                    const rowKey =
-                      typeof item.id ===
-                        'string' &&
-                      item.id
-                        ? item.id
-                        : `${item.date}-${index}`;
-
-                    return (
-                      <tr key={rowKey}>
-                        <td>
-                          {formatDate(
-                            item.date
-                          )}
-                        </td>
-
-                        <td>
-                          {getTypeLabel(
-                            item.primaryType
-                          )}
-                        </td>
-
-                        <td>
-                          {formatConfidence(
-                            item.confidence
-                          )}
-                        </td>
-
-                        <td>
-                          {getSpecialtyLabel(
-                            item.specialty
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  }
-                )}
-              </tbody>
-            </table>
-
-            <div className="diary-mobile-list">
-              {assessments.map((item, index) => {
-                const rowKey =
-                  typeof item.id === 'string' && item.id
-                    ? item.id
-                    : `${item.date}-${index}`;
-
-                return (
-                  <article
-                    className="diary-mobile-entry"
-                    key={rowKey}
-                  >
-                    <h2>{getTypeLabel(item.primaryType)}</h2>
-                    <dl>
-                      <div>
-                        <dt>التاريخ والوقت</dt>
-                        <dd>{formatDate(item.date)}</dd>
-                      </div>
-                      <div>
-                        <dt>نسبة التوافق*</dt>
-                        <dd>{formatConfidence(item.confidence)}</dd>
-                      </div>
-                      <div>
-                        <dt>التخصص المناسب للمناقشة</dt>
-                        <dd>{getSpecialtyLabel(item.specialty)}</dd>
-                      </div>
-                    </dl>
-                  </article>
-                );
-              })}
-            </div>
+          <div className="diary-confidence-context" role="note">
+            <h2>ما معنى درجة التوافق؟</h2>
+            <p>
+              تعبّر الدرجة عن مدى تطابق وصف الأعراض مع
+              سمات النمط وفق خوارزمية التقييم. وهي ليست
+              احتمالًا للإصابة بمرض ولا درجة ثقة في تشخيص
+              طبي. إذا استمرت الأعراض أو اختلفت عن المعتاد،
+              فناقشها مع طبيبك.
+            </p>
           </div>
         </>
       )}
