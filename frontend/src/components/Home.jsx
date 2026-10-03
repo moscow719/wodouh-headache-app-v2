@@ -136,32 +136,36 @@ function Home({ onNavigate }) {
 
   if (loading) {
     return (
-      <p
-        className="muted-text"
-        role="status"
-        aria-live="polite"
-      >
-        جارٍ تحميل الصفحة...
-      </p>
+      <div className="home-dashboard">
+        <p
+          className="muted-text"
+          role="status"
+          aria-live="polite"
+        >
+          جارٍ تحميل الصفحة...
+        </p>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <div className="card" role="alert">
-        <h2>تعذر تحميل البيانات</h2>
+      <div className="home-dashboard">
+        <div className="card" role="alert">
+          <h2>تعذر تحميل البيانات</h2>
 
-        <p className="muted-text">
-          {error}
-        </p>
+          <p className="muted-text">
+            {error}
+          </p>
 
-        <button
-          type="button"
-          className="btn primary"
-          onClick={() => window.location.reload()}
-        >
-          إعادة المحاولة
-        </button>
+          <button
+            type="button"
+            className="btn primary"
+            onClick={() => window.location.reload()}
+          >
+            إعادة المحاولة
+          </button>
+        </div>
       </div>
     );
   }
@@ -183,128 +187,116 @@ function Home({ onNavigate }) {
       : null;
 
   return (
-    <div>
-      <div className="page-head">
-        <div>
-          <h1>أهلًا بيك في NeuroPath</h1>
+    <div className="home-dashboard">
+      <header className="home-header">
+        <img
+          className="home-brand"
+          src="/wodouh-logo.svg"
+          alt="وضوح Wodouh"
+        />
+      </header>
 
-          <p className="muted-text">
-            نظرة سريعة على تقييماتك السابقة والمعلومات
-            المسجلة في حسابك.
-          </p>
-        </div>
+      <section className="home-welcome">
+        <h1>أهلًا بك في وضوح</h1>
+        <p>
+          نظرة سريعة على تقييماتك السابقة والمعلومات المسجلة في حسابك.
+        </p>
+      </section>
 
-        <button
-          type="button"
-          className="btn primary"
-          onClick={() => onNavigate('assess')}
+      <button
+        type="button"
+        className="home-start-button"
+        onClick={() => onNavigate('assess')}
+      >
+        ابدأ تقييمًا جديدًا
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          focusable="false"
         >
-          ابدأ تقييم جديد
-        </button>
-      </div>
+          <path d="M12 5v14m-7-7h14" />
+        </svg>
+      </button>
 
-      <div className="stats-grid">
-        <div className="card stat-card">
-          <span className="stat-num">
-            {stats.totalAssessments}
-          </span>
-
-          <span className="stat-label">
+      <div className="home-stats">
+        <div className="home-panel home-stat-card">
+          <span className="home-stat-label">
             إجمالي التقييمات
           </span>
+          <strong className="home-stat-value">
+            {stats.totalAssessments}
+          </strong>
         </div>
 
-        <div className="card stat-card">
-          <span className="stat-num">
+        <div className="home-panel home-stat-card">
+          <span className="home-stat-label">
+            النمط الأكثر تكرارًا
+          </span>
+          <strong className="home-stat-value home-stat-text">
             {mostCommonType}
-          </span>
-
-          <span className="stat-label">
-            أكثر نمط مسجل تكرارًا
-          </span>
+          </strong>
         </div>
       </div>
 
-      <div
-        className="card"
-        style={{ marginTop: 18 }}
-      >
-        <h3 style={{ marginTop: 0 }}>
-          آخر تقييم لك
-        </h3>
+      <section className="home-panel home-latest">
+        <div className="home-section-heading">
+          <h2>آخر تقييم</h2>
+          {formattedDate && (
+            <time dateTime={latest.date}>
+              {formattedDate}
+            </time>
+          )}
+        </div>
 
         {!latest && (
-          <>
-            <p className="muted-text">
-              لسه معملتش أي تقييم. دوس على "ابدأ تقييم
-              جديد" عشان تبدأ أول تقييم ليك.
+          <div className="home-empty-state">
+            <p>
+              لسه معملتش أي تقييم. ابدأ تقييمك الأول عشان تتابع الأعراض والأنماط المسجلة.
             </p>
-
-            <button
-              type="button"
-              className="btn primary"
-              style={{ marginTop: 12 }}
-              onClick={() => onNavigate('assess')}
-            >
-              ابدأ أول تقييم
-            </button>
-          </>
+          </div>
         )}
 
         {latest && (
           <>
-            {formattedDate && (
-              <p
-                className="muted-text"
-                style={{ marginBottom: 10 }}
-              >
-                {formattedDate}
-              </p>
-            )}
-
             {latestType && (
-              <div
-                className="specialty-box"
-                style={{ marginBottom: 12 }}
-              >
-                <strong>النمط المسجل في التقييم:</strong>{' '}
-                {latestType}
+              <div className="home-highlight home-pattern">
+                <span>النمط المسجل:</span>
+                <strong>{latestType}</strong>
               </div>
             )}
 
-            {latest.analysis ? (
-              <p>{latest.analysis}</p>
-            ) : (
-              <p className="muted-text">
-                لا يوجد ملخص متاح لهذا التقييم.
-              </p>
-            )}
+            <p className="home-analysis">
+              {latest.analysis ||
+                'لا يوجد ملخص متاح لهذا التقييم.'}
+            </p>
 
-            <p
-              className="muted-text"
-              style={{ marginTop: 12 }}
-            >
-              النتائج المعروضة هنا للمساعدة في متابعة
-              الأعراض والأنماط المسجلة، وليست تشخيصًا
-              طبيًا.
+            <p className="home-safety-note">
+              <span aria-hidden="true">ⓘ</span>
+              هذه النتائج للمساعدة في متابعة الأعراض فقط، وليست تشخيصًا طبيًا.
             </p>
 
             {latest.specialty?.ar && (
-              <div
-                className="specialty-box"
-                style={{ marginTop: 12 }}
-              >
-                <strong>التخصص المناسب للمناقشة:</strong>{' '}
-                {latest.specialty.ar}
+              <div className="home-highlight home-specialty">
+                <span>التخصص المناسب للنقاش:</span>
+                <strong>{latest.specialty.ar}</strong>
               </div>
             )}
           </>
         )}
-      </div>
+      </section>
 
-      <div style={{ marginTop: 18 }}>
+      <section className="home-family">
         <FamilyHistory />
-      </div>
+      </section>
+
+      <footer className="home-footer">
+        وضوح أداة توعية ومتابعة، وليست بديلًا عن التشخيص الطبي.
+      </footer>
     </div>
   );
 }

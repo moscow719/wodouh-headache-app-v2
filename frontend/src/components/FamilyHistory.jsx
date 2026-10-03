@@ -247,15 +247,10 @@ function FamilyHistory() {
   }
 
   return (
-    <div className="card">
-      <h3 style={{ marginTop: 0 }}>
-        <span
-          aria-hidden="true"
-        >
-          👨‍👧
-        </span>{' '}
+    <div className="card home-family-card">
+      <h2 className="home-family-title">
         التاريخ العائلي
-      </h3>
+      </h2>
 
       <p className="muted-text">
         تسجيل وجود تاريخ عائلي للصداع
