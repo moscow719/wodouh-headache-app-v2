@@ -1389,38 +1389,245 @@ body.high-contrast .report-simple-list li {
 /* ---------- Disclaimer ---------- */
 
 .disclaimer-screen {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 30px;
-  background: #e7eef0;
+  padding:
+    max(24px, env(safe-area-inset-top))
+    24px
+    max(24px, env(safe-area-inset-bottom));
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    'IBM Plex Sans Arabic',
+    system-ui,
+    'Segoe UI',
+    Tahoma,
+    sans-serif;
+}
+
+.disclaimer-screen::before,
+.disclaimer-screen::after {
+  position: fixed;
+  z-index: -1;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.55;
+  pointer-events: none;
+  content: '';
+}
+
+.disclaimer-screen::before {
+  top: -120px;
+  left: -100px;
+  background: #14A8A0;
+}
+
+.disclaimer-screen::after {
+  right: -100px;
+  bottom: -120px;
+  background: #7FD0F2;
 }
 
 .disclaimer-card {
-  max-width: 480px;
-  text-align: center;
+  position: relative;
+  z-index: 0;
+  width: min(680px, 100%);
+  max-width: 680px;
+  padding: 38px 44px;
+  border: 1px solid var(--glassborder);
+  border-radius: 24px;
+  background: var(--glass);
+  box-shadow: 0 24px 70px var(--shadow);
+  color: var(--text);
+  text-align: right;
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
 }
 
-.disclaimer-icon {
-  display: block;
-  width: 72px;
-  height: 72px;
-  object-fit: contain;
-  margin: 0 auto 10px;
+.disclaimer-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: var(--text);
+}
+
+.disclaimer-brand svg {
+  width: 44px;
+  height: 44px;
+  flex: none;
+}
+
+.disclaimer-brand > div {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.disclaimer-brand span:first-child {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.disclaimer-brand span:last-child {
+  color: var(--text2);
+  font-size: 14px;
 }
 
 .disclaimer-card h1 {
   margin: 0 0 18px;
-  font-size: 1.4rem;
+  color: var(--text);
+  font-size: 28px;
+  font-weight: 500;
+  text-align: center;
 }
 
-.disclaimer-card p {
-  text-align: right;
-  font-size: 0.92rem;
-  color: #3d4c56;
-  line-height: 1.7;
+.disclaimer-card #disclaimer-description > p {
   margin: 0 0 14px;
+  color: var(--text2);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.disclaimer-card #disclaimer-description > p strong {
+  color: var(--text);
+}
+
+.disclaimer-card .emergency-note {
+  margin: 18px 0 !important;
+  padding: 13px 15px;
+  border: 1px solid #e2a36f;
+  border-radius: 13px;
+  background: #fff2e7;
+  color: #70401d !important;
+}
+
+.disclaimer-card .emergency-note strong {
+  color: #7b351f;
+}
+
+.disclaimer-card .agree-checkbox {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
+  margin: 18px 0;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.75;
+  text-align: right;
+}
+
+.disclaimer-card .agree-checkbox input {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  margin: 3px 0 0;
+  accent-color: #0F7F78;
+}
+
+.disclaimer-submit {
+  width: 100%;
+  min-height: 54px;
+  border: 0;
+  border-radius: 14px;
+  background: #0F7F78;
+  color: #fff;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.disclaimer-submit:hover:not(:disabled) {
+  background: #0C6B65;
+}
+
+.disclaimer-submit:disabled {
+  background: #0F7F78;
+  color: #fff;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.disclaimer-submit:focus-visible,
+.disclaimer-card input:focus-visible {
+  outline: 3px solid #14A8A0;
+  outline-offset: 3px;
+}
+
+body.high-contrast .disclaimer-screen .disclaimer-card {
+  border-color: #fff;
+  background: #000;
+  color: #fff;
+}
+
+body.high-contrast .disclaimer-card h1,
+body.high-contrast .disclaimer-card #disclaimer-description > p,
+body.high-contrast .disclaimer-card #disclaimer-description > p strong,
+body.high-contrast .disclaimer-card .agree-checkbox,
+body.high-contrast .disclaimer-brand {
+  color: #fff !important;
+}
+
+body.high-contrast .disclaimer-card .emergency-note {
+  border-color: #ffea00;
+  background: #111;
+  color: #ffea00 !important;
+}
+
+body.high-contrast .disclaimer-card .emergency-note strong {
+  color: #ffea00;
+}
+
+@media (max-width: 600px) {
+  .disclaimer-screen {
+    align-items: flex-start;
+    padding:
+      max(18px, env(safe-area-inset-top))
+      16px
+      max(18px, env(safe-area-inset-bottom));
+  }
+
+  .disclaimer-card {
+    margin: 8px 0;
+    padding: 26px 22px;
+    border-radius: 22px;
+  }
+
+  .disclaimer-card h1 {
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 380px) {
+  .disclaimer-screen {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .disclaimer-card {
+    padding: 22px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .disclaimer-screen *,
+  .disclaimer-screen *::before,
+  .disclaimer-screen *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
 .agree-checkbox {
@@ -1443,10 +1650,6 @@ body.high-contrast .report-simple-list li {
   flex: none;
   margin-top: 2px;
   accent-color: #2f7a78;
-}
-
-.disclaimer-card .btn {
-  width: 100%;
 }
 
 /* ---------- Auth ---------- */
@@ -4679,15 +4882,6 @@ body.high-contrast .place-type {
 }
 
 @media (max-width: 600px) {
-  .disclaimer-screen {
-    padding: 16px;
-    align-items: flex-start;
-  }
-
-  .disclaimer-card {
-    margin-top: 16px;
-  }
-
   .card {
     padding: 20px;
   }

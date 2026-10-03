@@ -14,20 +14,35 @@ function Disclaimer({ onAgree }) {
   }
 
   return (
-    <div className="disclaimer-screen">
-      <div
-        className="card disclaimer-card"
+    <main className="disclaimer-screen">
+      <section
+        className="disclaimer-card"
         role="dialog"
         aria-modal="true"
         aria-labelledby="disclaimer-title"
         aria-describedby="disclaimer-description"
       >
-        <img
-          className="disclaimer-icon"
-          src="/wodouh-mark.svg"
-          alt=""
-          aria-hidden="true"
-        />
+        <div className="disclaimer-brand">
+          <svg
+            width="44"
+            height="44"
+            viewBox="0 0 100 100"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="9"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M8 70C30 70 44 66 54 50C64 34 56 18 44 22C32 26 36 46 54 52" stroke="currentColor" />
+            <path d="M54 52C68 57 76 56 86 56" stroke="#14A8A0" />
+            <circle cx="93" cy="56" r="6" fill="#14A8A0" stroke="none" />
+          </svg>
+          <div>
+            <span>wodouh</span>
+            <span>وضوح</span>
+          </div>
+        </div>
 
         <h1 id="disclaimer-title">
           قبل ما نبدأ
@@ -35,36 +50,34 @@ function Disclaimer({ onAgree }) {
 
         <div id="disclaimer-description">
           <p>
-            <strong>NeuroPath</strong> أداة توعية ومتابعة
-            بتساعدك تسجل أعراض الصداع وتفهم بعض الأنماط
-            الشائعة وتتعرف على التخصص الطبي المناسب
-            للمناقشة بشكل مبدئي. الأداة مش بديل عن
-            التشخيص أو التقييم الطبي.
+            <strong>وضوح</strong> أداة توعية ومتابعة تساعدك
+            على تسجيل أعراض الصداع وفهم بعض الأنماط الشائعة،
+            والتعرّف على التخصص الطبي المناسب لمناقشته.
+            وهي ليست بديلًا عن التشخيص أو التقييم الطبي.
           </p>
 
           <p>
-            النتائج والمعلومات اللي هتظهر لك مبنية على
-            البيانات اللي تدخلها وعلى نماذج أو قواعد
-            توعوية، وممكن تكون غير كاملة أو غير دقيقة.
-            ظهور نمط معين أو تخصص معين لا يعني إن عندك
-            تشخيصًا محددًا.
+            تعتمد النتائج والمعلومات المعروضة على البيانات
+            التي تدخلها وعلى نماذج أو قواعد توعوية، وقد تكون
+            غير مكتملة أو غير دقيقة. ظهور نمط أو تخصص معين
+            لا يعني وجود تشخيص محدد.
           </p>
 
           <p>
-            NeuroPath لا يحدد لك علاجًا شخصيًا، ولا يحدد
-            جرعات الأدوية، ولا يُفترض الاعتماد عليه
-            لاتخاذ قرار طبي منفرد.
+            لا يحدد وضوح علاجًا شخصيًا أو جرعات للأدوية،
+            ولا ينبغي الاعتماد عليه لاتخاذ قرار طبي منفرد.
           </p>
 
           <p
             className="emergency-note"
             role="note"
           >
-            <strong>مهم:</strong>{' '}
-            لو عندك أعراض شديدة أو مفاجئة، أو ظهرت
-            علامات تستدعي مساعدة عاجلة، ما تعتمدش على
-            الموقع في تقييم الحالة. اطلب المساعدة الطبية
-            العاجلة أو توجّه لأقرب طوارئ فورًا.
+            <strong>
+              إذا كانت أعراضك شديدة أو مفاجئة، فاطلب مساعدة
+              طبية عاجلة.
+            </strong>{' '}
+            لا تعتمد على الموقع لتقييم الحالة؛ اطلب المساعدة
+            الطبية العاجلة أو توجّه إلى أقرب قسم طوارئ فورًا.
           </p>
         </div>
 
@@ -84,23 +97,23 @@ function Disclaimer({ onAgree }) {
           />
 
           <span>
-            أوافق وأفهم إن NeuroPath أداة توعوية
-            ومتابعة فقط، وإن استخدامها لا يُغني عن
-            التقييم الطبي ولا يُعتبر تشخيصًا أو خطة علاج.
+            أوافق وأفهم أن وضوح أداة توعوية ومتابعة فقط،
+            وأن استخدامها لا يغني عن التقييم الطبي ولا يُعد
+            تشخيصًا أو خطة علاج.
           </span>
         </label>
 
         <button
           type="button"
-          className="btn primary"
+          className="disclaimer-submit"
           disabled={!checked}
           onClick={handleAgree}
           aria-disabled={!checked}
         >
-          ابدأ استخدام NeuroPath
+          ابدأ استخدام وضوح
         </button>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
 
