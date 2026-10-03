@@ -241,10 +241,15 @@ function Report({ onNavigate, userId }) {
   const [assessments, setAssessments] = useState([]);
   const [medications, setMedications] = useState([]);
   const [familyHistory, setFamilyHistory] = useState([]);
+  const [medicationLoadError, setMedicationLoadError] =
+    useState(false);
+  const [familyHistoryLoadError, setFamilyHistoryLoadError] =
+    useState(false);
   const [assessmentDetails, setAssessmentDetails] =
     useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [loadAttempt, setLoadAttempt] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -252,20 +257,53 @@ function Report({ onNavigate, userId }) {
     async function loadReportData() {
       try {
         const [
-          assessmentData,
-          medicationData,
-          profile,
-        ] = await Promise.all([
+          assessmentResult,
+          medicationResult,
+          profileResult,
+        ] = await Promise.allSettled([
           getAssessments(),
           getMedications(),
           getProfile(),
         ]);
 
-        if (
-          !Array.isArray(assessmentData) ||
-          !Array.isArray(medicationData)
-        ) {
+        if (assessmentResult.status === 'rejected') {
+          throw assessmentResult.reason;
+        }
+
+        const assessmentData = assessmentResult.value;
+
+        if (!Array.isArray(assessmentData)) {
           throw new Error('Invalid report data');
+        }
+
+        const medicationFailed =
+          medicationResult.status === 'rejected';
+        const medicationData = medicationFailed
+          ? []
+          : medicationResult.value;
+
+        if (!medicationFailed && !Array.isArray(medicationData)) {
+          throw new Error('Invalid medication report data');
+        }
+
+        const profileFailed =
+          profileResult.status === 'rejected';
+        const profile = profileFailed
+          ? null
+          : profileResult.value;
+
+        if (medicationFailed) {
+          console.error(
+            'Medication data is unavailable for the doctor report:',
+            medicationResult.reason
+          );
+        }
+
+        if (profileFailed) {
+          console.error(
+            'Family history is unavailable for the doctor report:',
+            profileResult.reason
+          );
         }
 
         const validAssessments = assessmentData
@@ -292,6 +330,8 @@ function Report({ onNavigate, userId }) {
         setMedications(
           medicationData.filter(isValidMedication)
         );
+        setMedicationLoadError(medicationFailed);
+        setFamilyHistoryLoadError(profileFailed);
         setFamilyHistory(
           parseFamilyHistory(profile?.family_history)
         );
@@ -326,7 +366,13 @@ function Report({ onNavigate, userId }) {
     return () => {
       isMounted = false;
     };
-  }, [userId]);
+  }, [loadAttempt, userId]);
+
+  function retryReportData() {
+    setError(null);
+    setLoading(true);
+    setLoadAttempt((attempt) => attempt + 1);
+  }
 
   const reportData = useMemo(() => {
     const sortedAssessments = [...assessments].sort(
@@ -419,7 +465,9 @@ function Report({ onNavigate, userId }) {
         ];
 
     const medicationLines =
-      medications.length > 0
+      medicationLoadError
+        ? ['تعذر تحميل قائمة الأدوية؛ لم تُدرج في التقرير.']
+        : medications.length > 0
         ? medications
             .slice(0, 10)
             .map(
@@ -454,9 +502,11 @@ function Report({ onNavigate, userId }) {
       ...assessmentLines,
       '',
       'التاريخ العائلي:',
-      ...(familyHistory.length > 0
-        ? familyHistory.map((item) => `- ${item}`)
-        : ['لا يوجد تاريخ عائلي مسجل.']),
+      ...(familyHistoryLoadError
+        ? ['تعذر تحميل التاريخ العائلي.']
+        : familyHistory.length > 0
+          ? familyHistory.map((item) => `- ${item}`)
+          : ['لا يوجد تاريخ عائلي مسجل.']),
       '',
       'الأدوية المسجلة:',
       ...medicationLines,
@@ -525,7 +575,7 @@ function Report({ onNavigate, userId }) {
         <button
           type="button"
           className="btn primary"
-          onClick={() => window.location.reload()}
+          onClick={retryReportData}
         >
           إعادة المحاولة
         </button>
@@ -751,16 +801,44 @@ function Report({ onNavigate, userId }) {
         <div className="report-additional-grid">
           <div className="report-subsection">
             <h3>التاريخ العائلي</h3>
-            <ul className="report-simple-list">
-              {familyHistoryText.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
+            {familyHistoryLoadError ? (
+              <div className="report-load-warning" role="alert">
+                <p className="report-muted">
+                  تعذر تحميل التاريخ العائلي.
+                </p>
+                <button
+                  type="button"
+                  className="report-retry-button"
+                  onClick={retryReportData}
+                >
+                  إعادة المحاولة
+                </button>
+              </div>
+            ) : (
+              <ul className="report-simple-list">
+                {familyHistoryText.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <div className="report-subsection">
             <h3>الأدوية المسجلة</h3>
-            {medications.length > 0 ? (
+            {medicationLoadError ? (
+              <div className="report-load-warning" role="alert">
+                <p className="report-muted">
+                  تعذر تحميل سجل الأدوية؛ لم تُدرج الأدوية في التقرير.
+                </p>
+                <button
+                  type="button"
+                  className="report-retry-button"
+                  onClick={retryReportData}
+                >
+                  إعادة المحاولة
+                </button>
+              </div>
+            ) : medications.length > 0 ? (
               <ul className="report-simple-list">
                 {medications.slice(0, 10).map(
                   (item, index) => (

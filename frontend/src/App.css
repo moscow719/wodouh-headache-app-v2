@@ -429,6 +429,32 @@ svg {
   line-height: 1.7;
 }
 
+.report-load-warning {
+  padding: 10px 12px;
+  border: 1px solid #785614;
+  border-radius: 9px;
+  background: #30240f;
+  color: #f0cc72;
+}
+
+.report-load-warning .report-muted {
+  margin-top: 0;
+  color: #f0cc72;
+}
+
+.report-retry-button {
+  margin-top: 8px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #8ee0d7;
+  font: inherit;
+  font-size: 0.88rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
 .report-additional-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
