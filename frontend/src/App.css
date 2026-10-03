@@ -128,9 +128,10 @@ svg {
 }
 
 .nav .icon {
+  display: block;
   width: 20px;
-  display: inline-block;
-  text-align: center;
+  height: 20px;
+  flex: none;
 }
 
 .logout-button {
