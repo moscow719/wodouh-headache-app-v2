@@ -488,7 +488,7 @@ async function saveMedication(name, dose) {
       dose: validated.dose || null,
     })
     .select(
-      'id, created_at, taken_at, name, dose'
+      'id, taken_at, name, dose'
     )
     .single();
 
@@ -528,7 +528,7 @@ async function getMedications() {
     result = await supabase
       .from('medications')
       .select(
-        'id, created_at, taken_at, name, dose'
+        'id, taken_at, name, dose'
       )
       .order('taken_at', {
         ascending: false,
